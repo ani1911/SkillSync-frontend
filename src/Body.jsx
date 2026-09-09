@@ -6,15 +6,15 @@ import api from "./utils/axios";
 import { addUser, removeUser } from "./store/userSlice";
 
 const Body = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const dispatch=useDispatch();
+  const navigate=useNavigate();
 
   // Restore the session on page load: the JWT lives in an HTTP-only cookie,
   // so we ask the backend who we are and hydrate the redux store.
   useEffect(() => {
-    const fetchLoggedInUser = async () => {
+    const fetchLoggedInUser=async ()=>{
       try {
-        const res = await api.get("/profile/view");
+        const res=await api.get("/profile/view");
         dispatch(addUser(res.data));
       } catch (err) {
         // Not authenticated -> redirect to login
