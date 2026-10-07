@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import api from "./utils/axios";
+import { addUser } from "./store/userSlice";
 
 const getErrorMessage = (data) =>
   typeof data === "string"
@@ -15,6 +17,7 @@ const Signup = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -23,8 +26,11 @@ const Signup = () => {
     setLoading(true);
     try {
       await api.post("/signup", { firstName, lastName, emailId, password });
+      await api.post("/login", { emailId, password });
+      const res = await api.get("/profile/view");
+      dispatch(addUser(res.data));
       setSuccess(true);
-      setTimeout(() => navigate("/login"), 1500);
+      setTimeout(() => navigate("/profile"), 1500);
     } catch (err) {
       setError(getErrorMessage(err.response?.data));
     } finally {
@@ -51,7 +57,7 @@ const Signup = () => {
         {success && (
           <div role="alert" className="alert alert-success mb-6 rounded-xl border-success/20 bg-success/10 text-success-content animate-in fade-in zoom-in">
             <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span className="text-sm font-medium">Welcome aboard! Redirecting to login...</span>
+            <span className="text-sm font-medium">Welcome aboard! Redirecting to profile setup...</span>
           </div>
         )}
 
