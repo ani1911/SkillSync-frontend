@@ -29,7 +29,6 @@ const Matches = () => {
     try {
       setSending(true);
       await api.post(`/connection/send/${userId}`, { message });
-      // Remove from matches list since we sent a request
       setMatches(matches.filter(m => m._id !== userId));
       setSelectedMatch(null);
       setMessage("");
@@ -46,13 +45,13 @@ const Matches = () => {
   return (
     <div className="flex-grow py-10 px-4 relative z-10 max-w-[1200px] mx-auto w-full">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-white tracking-tight">Your Matches</h1>
+        <h1 className="text-[32px] font-bold text-white tracking-tight">Your Matches</h1>
         <p className="text-[14px] text-white/50 mt-1">Send a premium connection request to unlock their full profile and start collaborating.</p>
       </div>
 
       {matches.length === 0 ? (
         <div className="text-center py-20 bg-white/5 rounded-2xl border border-white/10">
-          <p className="text-white/50">You don't have any matches yet. Keep swiping!</p>
+          <p className="text-white/50">You don't have any new matches. Keep swiping!</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
