@@ -4,6 +4,7 @@ import Login from "./Login";
 import Signup from "./Signup";
 import Profile from "./Profile";
 import Feed from "./Feed";
+import Matches from "./Matches";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="matches" element={<Matches />} />
         </Route>
       </Routes>
     </BrowserRouter>

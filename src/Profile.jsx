@@ -151,7 +151,7 @@ const SectionTitle = ({ children }) => (
   </div>
 );
 
-const ProfileCard = ({ data, previewMode = 'desktop' }) => {
+export const ProfileCard = ({ data, previewMode = 'desktop' }) => {
   const skills = typeof data.skills === "string"
     ? data.skills.split(",").map((s) => s.trim()).filter(Boolean)
     : data.skills || [];

@@ -36,7 +36,14 @@ const NavBar = () => {
       </div>
 
       {user ? (
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-6">
+          <div className="hidden md:flex items-center">
+            <Link to="/matches" className="px-4 py-2 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+              Matches
+            </Link>
+          </div>
+
           <div className="hidden sm:flex flex-col items-end">
             <p className="font-semibold text-sm">{user.firstName} {user.lastName}</p>
             <p className="text-xs text-base-content/60">{user.headline || 'Member'}</p>
@@ -67,7 +74,13 @@ const NavBar = () => {
               <li>
                 <Link to="/profile" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-                  Profile <span className="badge badge-primary badge-sm ml-auto">New</span>
+                  Profile
+                </Link>
+              </li>
+              <li className="md:hidden">
+                <Link to="/matches" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+                  Matches
                 </Link>
               </li>
               <li>
