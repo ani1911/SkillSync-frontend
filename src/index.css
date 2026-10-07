@@ -2,3 +2,36 @@
 @plugin "daisyui" {
   themes: dark --default;
 }
+
+@theme {
+  --animate-blob: blob 7s infinite;
+}
+
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@layer utilities {
+  .glass-panel {
+    @apply bg-base-300/40 backdrop-blur-xl border border-white/10 shadow-2xl;
+  }
+  
+  .glass-nav {
+    @apply bg-base-100/60 backdrop-blur-lg border-b border-white/5;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+  }
+  
+  .gradient-bg {
+    @apply bg-gradient-to-br from-base-300 via-base-100 to-base-300;
+  }
+
+  .animated-gradient-btn {
+    @apply bg-gradient-to-r from-primary to-secondary hover:from-primary/80 hover:to-secondary/80 text-primary-content transition-all duration-300 hover:shadow-[0_0_20px_rgba(var(--color-primary),0.4)] hover:-translate-y-0.5;
+  }
+}
