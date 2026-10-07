@@ -1,7 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "./utils/axios";
 import { addUser } from "./store/userSlice";
+import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2, Trash2, Plus } from "lucide-react";
 
 const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";
 
@@ -11,30 +12,15 @@ const EXPERIENCE_BADGE = {
   advanced: { label: "Advanced", cls: "bg-rose-500/20 text-rose-400 border border-rose-500/30" },
 };
 
-const LOOKING_FOR_MAP = {
-  collaborator: { icon: "🤝", label: "Collaborator" },
-  mentor: { icon: "🎓", label: "Mentor" },
-  project: { icon: "🚀", label: "Project Partner" },
-  internship: { icon: "💼", label: "Internship" },
+const getLookingForIcon = (type) => {
+  switch(type) {
+    case 'mentor': return <GraduationCap size={20} className="text-primary" />;
+    case 'collaborator': return <Users size={20} className="text-secondary" />;
+    case 'project': return <Briefcase size={20} className="text-accent" />;
+    case 'internship': return <Code2 size={20} className="text-info" />;
+    default: return <Users size={20} className="text-primary" />;
+  }
 };
-
-const AVAILABILITY_MAP = {
-  "part-time": { icon: "⏱", label: "Part-time" },
-  "full-time": { icon: "⚡", label: "Full-time" },
-  weekends: { icon: "🗓", label: "Weekends" },
-};
-
-const GithubIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
-  </svg>
-);
-
-const LinkedinIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-  </svg>
-);
 
 const ChevronDown = () => (
   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -165,7 +151,7 @@ const SectionTitle = ({ children }) => (
   </div>
 );
 
-const ProfileCard = ({ data }) => {
+const ProfileCard = ({ data, previewMode = 'desktop' }) => {
   const skills = typeof data.skills === "string"
     ? data.skills.split(",").map((s) => s.trim()).filter(Boolean)
     : data.skills || [];
@@ -174,103 +160,127 @@ const ProfileCard = ({ data }) => {
     ? data.interests.split(",").map((s) => s.trim()).filter(Boolean)
     : data.interests || [];
 
+  const projects = data.projects || [];
+
   const expBadge = EXPERIENCE_BADGE[data.experienceLevel];
-  const lookingFor = LOOKING_FOR_MAP[data.lookingFor];
-  const availability = AVAILABILITY_MAP[data.availability];
+
+  const isMobile = previewMode === 'mobile';
 
   return (
-    <div className="w-full max-w-[340px] mx-auto select-none">
-      <div className="rounded-2xl overflow-hidden bg-[#18181b] border border-white/8 shadow-[0_32px_64px_rgba(0,0,0,0.5)]">
-        <div className="relative h-60 overflow-hidden">
+    <div className={`w-full mx-auto select-none ${isMobile ? 'max-w-[380px]' : 'max-w-[800px]'}`}>
+      <div className={`w-full bg-[#1e1e24] shadow-2xl overflow-hidden rounded-[2rem] border border-white/5 flex flex-col relative ${isMobile ? 'h-[700px]' : 'xl:flex-row h-[75vh] max-h-[800px] min-h-[500px]'}`}>
+        {/* Left Side: Image Banner */}
+        <div className={`relative shrink-0 bg-base-300 ${isMobile ? 'h-[350px] w-full' : 'h-[250px] xl:h-auto xl:w-[35%]'}`}>
           <img
             src={data.photourl || FALLBACK_AVATAR}
             alt="profile"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover pointer-events-none"
             onError={(e) => { e.currentTarget.src = FALLBACK_AVATAR; }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#18181b] via-[#18181b]/20 to-transparent" />
-          {expBadge && (
-            <span className={`absolute top-3 left-3 text-[11px] font-semibold px-2.5 py-1 rounded-full ${expBadge.cls}`}>
-              {expBadge.label}
-            </span>
-          )}
-          {availability && (
-            <span className="absolute top-3 right-3 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-black/40 text-white/70 border border-white/10 backdrop-blur-sm">
-              {availability.icon} {availability.label}
-            </span>
-          )}
+          <div className="absolute inset-0 bg-gradient-to-t xl:bg-gradient-to-r from-[#1e1e24] via-[#1e1e24]/20 to-transparent pointer-events-none" />
+          
+          <div className="absolute top-5 left-5 right-5 flex flex-col gap-2 items-start pointer-events-none">
+            {expBadge && (
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md ${expBadge.cls}`}>
+                {expBadge.label}
+              </span>
+            )}
+            {data.availability && (
+              <span className="px-3 py-1 bg-black/40 text-white/90 backdrop-blur-md rounded-full text-xs font-semibold flex items-center gap-1.5">
+                <Calendar size={12} />
+                {data.availability.charAt(0).toUpperCase() + data.availability.slice(1)}
+              </span>
+            )}
+          </div>
         </div>
-
-        <div className="p-5 space-y-3.5">
-          <div>
-            <h3 className="text-[18px] font-bold text-white leading-tight">
-              {data.firstName || "Your Name"}{data.lastName ? ` ${data.lastName}` : ""}
-              {data.age ? <span className="text-white/35 font-normal text-base ml-1.5">{data.age}</span> : null}
-            </h3>
-            {data.username && <p className="text-[12px] text-primary/60 font-medium mt-0.5">@{data.username}</p>}
-            {data.headline && <p className="text-[12px] text-white/45 mt-1 leading-snug">{data.headline}</p>}
+        
+        {/* Right Side: Scrollable Content Area */}
+        <div className={`flex-1 p-6 relative overflow-y-auto ${!isMobile ? 'xl:p-8 z-10' : ''}`}>
+          <div className="mb-4">
+            <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md">
+              {data.firstName || "Your Name"} {data.lastName} <span className="text-2xl text-white/50 font-normal"> {data.age || ""}</span>
+            </h2>
+            {data.username && <p className="text-primary font-medium text-sm">@{data.username}</p>}
+            <p className="text-white/80 font-medium mt-1 leading-snug">
+              {data.headline || "Software Developer"}
+            </p>
           </div>
 
+          {data.lookingFor && (
+            <div className="mb-6 p-4 bg-white/5 rounded-xl flex items-center gap-3 border border-white/10">
+              <div className="p-2 bg-black/20 rounded-lg">
+                {getLookingForIcon(data.lookingFor)}
+              </div>
+              <p className="text-white/80 text-sm font-medium">
+                Looking for a <span className="text-white font-bold capitalize">{data.lookingFor}</span>
+              </p>
+            </div>
+          )}
+
           {data.about && (
-            <p className="text-[12px] text-white/45 leading-relaxed line-clamp-2">{data.about}</p>
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">About</h3>
+              <p className="text-white/80 text-sm leading-relaxed">{data.about}</p>
+            </div>
+          )}
+
+          {projects.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-3">Projects</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {projects.map((project, i) => (
+                  <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl relative group">
+                    <h4 className="text-white font-bold text-sm flex items-center gap-2 pr-6">
+                      {project.title}
+                    </h4>
+                    <p className="text-white/60 text-xs mt-1.5 leading-relaxed">{project.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
 
           {skills.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {skills.slice(0, 5).map((skill, i) => (
-                <span key={i} className="text-[11px] font-semibold px-2.5 py-1 rounded-md bg-white/6 text-white/55 border border-white/8">
-                  {skill}
-                </span>
-              ))}
-              {skills.length > 5 && (
-                <span className="text-[11px] px-2 py-1 text-white/25">+{skills.length - 5}</span>
-              )}
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-base-300 text-white/90 rounded-lg font-mono text-xs font-semibold">
+                    {skill}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
           {interests.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
-              {interests.slice(0, 4).map((interest, i) => (
-                <span key={i} className="text-[11px] font-medium px-2.5 py-1 rounded-full bg-primary/10 text-primary/60 border border-primary/15">
-                  {interest}
-                </span>
-              ))}
+            <div className="mb-8">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">Interests</h3>
+              <div className="flex flex-wrap gap-2">
+                {interests.map((interest, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                    {interest}
+                  </span>
+                ))}
+              </div>
             </div>
           )}
 
-          {lookingFor && (
-            <div className="flex items-center gap-2 py-2 px-3 rounded-xl bg-white/4 border border-white/6">
-              <span>{lookingFor.icon}</span>
-              <span className="text-[12px] text-white/45">Looking for a <span className="text-white/70 font-semibold">{lookingFor.label}</span></span>
-            </div>
-          )}
-
-          {(data.githubUrl || data.linkedinUrl) && (
-            <div className="flex gap-2">
-              {data.githubUrl && (
-                <span className="flex items-center gap-1.5 text-[11px] text-white/35 px-2.5 py-1.5 rounded-lg bg-white/4 border border-white/6">
-                  <GithubIcon /> GitHub
-                </span>
-              )}
-              {data.linkedinUrl && (
-                <span className="flex items-center gap-1.5 text-[11px] text-white/35 px-2.5 py-1.5 rounded-lg bg-white/4 border border-white/6">
-                  <LinkedinIcon /> LinkedIn
-                </span>
-              )}
-            </div>
-          )}
-
-          <div className="flex gap-2 pt-0.5">
-            <button type="button" className="flex-1 h-9 rounded-xl text-[13px] font-semibold bg-white/5 text-white/50 border border-white/8 hover:bg-white/8 transition-all">
-              Pass
-            </button>
-            <button type="button" className="flex-1 h-9 rounded-xl text-[13px] font-semibold bg-primary text-white hover:bg-primary/90 transition-all">
-              Connect ✦
-            </button>
+          <div className="flex gap-3 mt-4">
+            {data.githubUrl && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 text-white/80 rounded-xl text-sm font-medium border border-white/10">
+                <GitBranch size={16} /> GitHub
+              </div>
+            )}
+            {data.linkedinUrl && (
+              <div className="flex items-center gap-2 px-4 py-2 bg-white/5 text-white/80 rounded-xl text-sm font-medium border border-white/10">
+                <Link size={16} /> LinkedIn
+              </div>
+            )}
           </div>
         </div>
       </div>
-      <p className="text-center text-[11px] text-white/15 mt-3 tracking-wide">Live preview</p>
+      <p className="text-center text-[11px] text-white/15 mt-3 tracking-wide">Live Preview (Horizontal Card)</p>
     </div>
   );
 };
@@ -278,12 +288,14 @@ const ProfileCard = ({ data }) => {
 const Profile = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
+  const [previewMode, setPreviewMode] = useState('mobile');
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", username: "", age: "", gender: "",
     headline: "", about: "", skills: "", interests: "", photourl: "",
     experienceLevel: "", lookingFor: "", availability: "",
     githubUrl: "", linkedinUrl: "", portfolioUrl: "",
+    projects: []
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -308,12 +320,28 @@ const Profile = () => {
         githubUrl: user.githubUrl || "",
         linkedinUrl: user.linkedinUrl || "",
         portfolioUrl: user.portfolioUrl || "",
+        projects: user.projects || []
       });
     }
   }, [user]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleProjectChange = (index, field, value) => {
+    const updatedProjects = [...formData.projects];
+    updatedProjects[index] = { ...updatedProjects[index], [field]: value };
+    setFormData(prev => ({ ...prev, projects: updatedProjects }));
+  };
+
+  const addProject = () => {
+    setFormData(prev => ({ ...prev, projects: [...prev.projects, { title: "", description: "", link: "" }] }));
+  };
+
+  const removeProject = (index) => {
+    const updatedProjects = formData.projects.filter((_, i) => i !== index);
+    setFormData(prev => ({ ...prev, projects: updatedProjects }));
   };
 
   const handleSubmit = async (e) => {
@@ -325,7 +353,10 @@ const Profile = () => {
       const toArray = (val) =>
         typeof val === "string" ? val.split(",").map((s) => s.trim()).filter(Boolean) : val || [];
 
-      const payload = { ...formData, skills: toArray(formData.skills), interests: toArray(formData.interests) };
+      // Filter out empty projects
+      const validProjects = formData.projects.filter(p => p.title.trim());
+
+      const payload = { ...formData, skills: toArray(formData.skills), interests: toArray(formData.interests), projects: validProjects };
 
       Object.keys(payload).forEach((key) => {
         if (payload[key] === "" || (Array.isArray(payload[key]) && payload[key].length === 0))
@@ -347,14 +378,29 @@ const Profile = () => {
 
   return (
     <div className="flex-grow py-10 px-4 relative z-10">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-8 text-center">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="mb-8 text-center flex flex-col items-center">
           <h1 className="text-[28px] font-bold text-white tracking-tight">Profile Settings</h1>
-          <p className="text-[13px] text-white/35 mt-1">This is how you appear to others on SkillSync</p>
+          <p className="text-[13px] text-white/35 mt-1 mb-6">This is how you appear to others on SkillSync</p>
+          
+          <div className="flex bg-[#111113] border border-white/10 rounded-full p-1">
+            <button 
+              onClick={() => setPreviewMode('mobile')}
+              className={`px-5 py-2 rounded-full text-xs font-semibold transition-all ${previewMode === 'mobile' ? 'bg-primary/20 text-primary' : 'text-white/50 hover:text-white'}`}
+            >
+              Mobile Preview
+            </button>
+            <button 
+              onClick={() => setPreviewMode('desktop')}
+              className={`px-5 py-2 rounded-full text-xs font-semibold transition-all ${previewMode === 'desktop' ? 'bg-primary/20 text-primary' : 'text-white/50 hover:text-white'}`}
+            >
+              Desktop Preview
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-col xl:flex-row gap-6 items-start">
-          <div className="w-full xl:w-[58%] rounded-2xl bg-[#111113] border border-white/8 shadow-2xl overflow-visible">
+          <div className="w-full xl:w-[45%] shrink-0 rounded-2xl bg-[#111113] border border-white/8 shadow-2xl overflow-visible">
             {(error || success) && (
               <div className={`px-6 py-3 text-[13px] font-medium rounded-t-2xl ${error
                 ? "bg-rose-500/10 text-rose-400 border-b border-rose-500/15"
@@ -363,7 +409,7 @@ const Profile = () => {
               </div>
             )}
 
-            <form onSubmit={handleSubmit} className="p-6 space-y-7">
+            <form onSubmit={handleSubmit} className="p-6 space-y-7 h-full">
               <div>
                 <SectionTitle>Identity</SectionTitle>
                 <div className="grid grid-cols-2 gap-3 mb-3">
@@ -419,6 +465,38 @@ const Profile = () => {
               </div>
 
               <div>
+                <SectionTitle>Projects</SectionTitle>
+                <div className="space-y-4">
+                  {formData.projects.map((project, index) => (
+                    <div key={index} className="p-4 bg-white/5 border border-white/10 rounded-xl relative group">
+                      <button type="button" onClick={() => removeProject(index)} className="absolute top-2 right-2 p-1.5 text-white/30 hover:text-error hover:bg-error/10 rounded-lg transition-colors">
+                        <Trash2 size={14} />
+                      </button>
+                      <div className="space-y-3 mt-1">
+                        <div>
+                          <label className="block text-[11px] font-semibold text-white/50 mb-1.5">Project Title</label>
+                          <input type="text" className={inputCls} value={project.title} onChange={(e) => handleProjectChange(index, "title", e.target.value)} placeholder="e.g. My Awesome App" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-white/50 mb-1.5">Description</label>
+                          <textarea className={`${inputCls} h-16 py-2 resize-none`} value={project.description} onChange={(e) => handleProjectChange(index, "description", e.target.value)} placeholder="Briefly describe what it does..." />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-semibold text-white/50 mb-1.5">Link (Optional)</label>
+                          <input type="text" className={inputCls} value={project.link} onChange={(e) => handleProjectChange(index, "link", e.target.value)} placeholder="https://github.com/..." />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {formData.projects.length < 3 && (
+                    <button type="button" onClick={addProject} className="w-full py-3 rounded-xl border border-dashed border-white/20 text-white/50 text-[13px] font-medium hover:border-primary/50 hover:text-primary transition-all flex items-center justify-center gap-2">
+                      <Plus size={16} /> Add a Project
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div>
                 <SectionTitle>Preferences</SectionTitle>
                 <div className="grid grid-cols-3 gap-3">
                   <CustomSelect
@@ -465,41 +543,36 @@ const Profile = () => {
                     <label className="block text-[13px] font-semibold text-white/50 mb-2">Photo URL</label>
                     <input name="photourl" type="text" className={inputCls} value={formData.photourl} onChange={handleChange} placeholder="https://example.com/photo.jpg" />
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none"><GithubIcon /></span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none"><GitBranch size={14}/></span>
                       <input name="githubUrl" type="text" className={`${inputCls} pl-9`} value={formData.githubUrl} onChange={handleChange} placeholder="github.com/user" />
                     </div>
                     <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none"><LinkedinIcon /></span>
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none"><Link size={14}/></span>
                       <input name="linkedinUrl" type="text" className={`${inputCls} pl-9`} value={formData.linkedinUrl} onChange={handleChange} placeholder="linkedin.com/in/user" />
-                    </div>
-                    <div className="relative">
-                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/20 pointer-events-none">
-                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
-                      </span>
-                      <input name="portfolioUrl" type="text" className={`${inputCls} pl-9`} value={formData.portfolioUrl} onChange={handleChange} placeholder="yoursite.com" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-end pt-1">
+              <div className="flex justify-end pt-4 pb-2">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="h-10 px-6 rounded-xl text-[13px] font-semibold bg-primary hover:bg-primary/90 text-white transition-all disabled:opacity-40 flex items-center gap-2"
+                  className="h-11 px-8 rounded-xl text-[14px] font-bold bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20 transition-all disabled:opacity-40 flex items-center gap-2"
                 >
                   {loading && <span className="loading loading-spinner loading-xs" />}
-                  {loading ? "Saving…" : "Save changes"}
+                  {loading ? "Saving…" : "Save Profile"}
                 </button>
               </div>
             </form>
           </div>
 
-          <div className="w-full xl:w-[42%] xl:sticky xl:top-24 space-y-3">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-white/20 text-center mb-3">Card Preview</p>
-            <ProfileCard data={formData} />
+          <div className="w-full xl:flex-1 xl:sticky xl:top-24 mt-8 xl:mt-0 flex justify-center">
+            <div className="w-full flex justify-center">
+              <ProfileCard data={formData} previewMode={previewMode} />
+            </div>
           </div>
         </div>
       </div>

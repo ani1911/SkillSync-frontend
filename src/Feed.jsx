@@ -6,6 +6,14 @@ import { BASE_URL } from "./utils/constants";
 import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2 } from "lucide-react";
 
+const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";
+
+const EXPERIENCE_BADGE = {
+  beginner: { label: "Beginner", cls: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" },
+  intermediate: { label: "Intermediate", cls: "bg-amber-500/20 text-amber-400 border border-amber-500/30" },
+  advanced: { label: "Advanced", cls: "bg-rose-500/20 text-rose-400 border border-rose-500/30" },
+};
+
 const getLookingForIcon = (type) => {
   switch(type) {
     case 'mentor': return <GraduationCap size={20} className="text-primary" />;
@@ -16,19 +24,10 @@ const getLookingForIcon = (type) => {
   }
 };
 
-const getExperienceColor = (level) => {
-  switch(level) {
-    case 'advanced': return 'bg-error/20 text-error';
-    case 'intermediate': return 'bg-warning/20 text-warning-content';
-    case 'beginner': return 'bg-success/20 text-success';
-    default: return 'bg-base-300 text-base-content';
-  }
-};
-
 const UserCard = ({ user, onSwipe, index }) => {
   const controls = useAnimation();
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-200, 200], [-10, 10]);
+  const rotate = useTransform(x, [-200, 200], [-5, 5]);
   const opacity = useTransform(x, [-200, 0, 200], [0.8, 1, 0.8]);
   const likeOpacity = useTransform(x, [20, 100], [0, 1]);
   const nopeOpacity = useTransform(x, [-20, -100], [0, 1]);
@@ -39,10 +38,10 @@ const UserCard = ({ user, onSwipe, index }) => {
     const swipeThreshold = 100;
 
     if (offset > swipeThreshold || velocity > 500) {
-      await controls.start({ x: 500, opacity: 0, transition: { duration: 0.3 } });
+      await controls.start({ x: 800, opacity: 0, transition: { duration: 0.3 } });
       onSwipe("like", user._id);
     } else if (offset < -swipeThreshold || velocity < -500) {
-      await controls.start({ x: -500, opacity: 0, transition: { duration: 0.3 } });
+      await controls.start({ x: -800, opacity: 0, transition: { duration: 0.3 } });
       onSwipe("dislike", user._id);
     } else {
       controls.start({ x: 0, transition: { type: "spring", stiffness: 300, damping: 20 } });
@@ -50,13 +49,24 @@ const UserCard = ({ user, onSwipe, index }) => {
   };
 
   const handleButtonSwipe = async (type) => {
-    const direction = type === "like" ? 500 : -500;
+    const direction = type === "like" ? 800 : -800;
     await controls.start({ x: direction, opacity: 0, transition: { duration: 0.3 } });
     onSwipe(type, user._id);
   };
 
   const scale = 1 - index * 0.05;
-  const yOffset = index * 12;
+  const yOffset = index * 15;
+
+  const skills = typeof user.skills === "string"
+    ? user.skills.split(",").map((s) => s.trim()).filter(Boolean)
+    : user.skills || [];
+
+  const interests = typeof user.interests === "string"
+    ? user.interests.split(",").map((s) => s.trim()).filter(Boolean)
+    : user.interests || [];
+
+  const projects = user.projects || [];
+  const expBadge = EXPERIENCE_BADGE[user.experienceLevel];
 
   return (
     <motion.div
@@ -72,25 +82,23 @@ const UserCard = ({ user, onSwipe, index }) => {
         y: yOffset,
         zIndex: 10 - index
       }}
-      className={`absolute w-full max-w-[450px] h-[750px] max-h-[85vh] will-change-transform ${index === 0 ? "cursor-grab active:cursor-grabbing" : ""}`}
+      className={`absolute w-full max-w-[800px] will-change-transform ${index === 0 ? "cursor-grab active:cursor-grabbing" : ""}`}
     >
-      <div className="w-full h-full bg-[#1e1e24] shadow-2xl overflow-hidden rounded-[2rem] border border-white/5 flex flex-col relative">
-        
-        {/* Top Image Banner */}
-        <div className="relative h-[45%] w-full shrink-0 bg-base-300">
+      <div className="w-full h-[75vh] max-h-[800px] min-h-[500px] bg-[#1e1e24] shadow-2xl overflow-hidden rounded-[2rem] border border-white/5 flex flex-col xl:flex-row relative">
+        {/* Left Side: Image Banner */}
+        <div className="relative h-[250px] xl:h-full xl:w-[35%] shrink-0 bg-base-300">
           <img
-            src={user.photourl || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"}
+            src={user.photourl || FALLBACK_AVATAR}
             alt={user.firstName}
             className="w-full h-full object-cover pointer-events-none"
+            onError={(e) => { e.currentTarget.src = FALLBACK_AVATAR; }}
           />
-          {/* Gradient to blend image into the dark content area */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#1e1e24] via-[#1e1e24]/40 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t xl:bg-gradient-to-r from-[#1e1e24] via-[#1e1e24]/20 to-transparent pointer-events-none" />
           
-          {/* Top Badges */}
-          <div className="absolute top-5 left-5 right-5 flex justify-between items-start pointer-events-none">
-            {user.experienceLevel && (
-              <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md ${getExperienceColor(user.experienceLevel)}`}>
-                {user.experienceLevel.charAt(0).toUpperCase() + user.experienceLevel.slice(1)}
+          <div className="absolute top-5 left-5 right-5 flex flex-col gap-2 items-start pointer-events-none">
+            {expBadge && (
+              <span className={`px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md ${expBadge.cls}`}>
+                {expBadge.label}
               </span>
             )}
             {user.availability && (
@@ -104,24 +112,24 @@ const UserCard = ({ user, onSwipe, index }) => {
           {/* Swipe Stamps */}
           {index === 0 && (
             <>
-              <motion.div style={{ opacity: likeOpacity }} className="absolute top-1/4 left-8 border-4 border-success text-success text-5xl font-black uppercase tracking-widest px-4 py-1 rounded-xl rotate-[-15deg] pointer-events-none z-20">
+              <motion.div style={{ opacity: likeOpacity }} className="absolute top-1/3 left-8 border-4 border-success text-success text-4xl font-black uppercase tracking-widest px-4 py-1 rounded-xl rotate-[-15deg] pointer-events-none z-20">
                 LIKE
               </motion.div>
-              <motion.div style={{ opacity: nopeOpacity }} className="absolute top-1/4 right-8 border-4 border-error text-error text-5xl font-black uppercase tracking-widest px-4 py-1 rounded-xl rotate-[15deg] pointer-events-none z-20">
+              <motion.div style={{ opacity: nopeOpacity }} className="absolute top-1/3 right-8 border-4 border-error text-error text-4xl font-black uppercase tracking-widest px-4 py-1 rounded-xl rotate-[15deg] pointer-events-none z-20">
                 NOPE
               </motion.div>
             </>
           )}
         </div>
         
-        {/* Scrollable Content Area - Stops drag propagation for vertical scroll */}
-        <div 
-          className="flex-1 overflow-y-auto overflow-x-hidden p-6 -mt-10 z-10 scrollbar-hide"
-          onPointerDownCapture={(e) => {
-            // Let the parent motion.div handle horizontal drag, but allow vertical scrolling here
-          }}
-        >
-          {/* Header */}
+        {/* Right Side: Content Area */}
+        <div className="flex-1 relative flex flex-col h-full overflow-hidden">
+          <div className="flex-1 p-6 pb-24 xl:p-8 xl:pb-24 overflow-y-auto feed-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <style>{`
+              .feed-scrollbar::-webkit-scrollbar {
+                display: none;
+              }
+            `}</style>
           <div className="mb-4">
             <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md">
               {user.firstName} {user.lastName} <span className="text-2xl text-white/50 font-normal"> {user.age || ""}</span>
@@ -132,99 +140,103 @@ const UserCard = ({ user, onSwipe, index }) => {
             </p>
           </div>
 
-          {/* About */}
-          {user.about && (
-            <div className="mb-5">
-              <p className="text-white/60 text-sm leading-relaxed">
-                {user.about}
-              </p>
-            </div>
-          )}
-
-          {/* Projects */}
-          {user.projects && user.projects.length > 0 && (
-            <div className="mb-5 space-y-3">
-              {user.projects.map((project, i) => (
-                <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl relative">
-                  <h3 className="text-white font-bold text-sm flex items-center gap-2">
-                    {project.title}
-                    {project.link && (
-                      <a href={project.link} target="_blank" rel="noreferrer" className="text-primary hover:text-primary/80 pointer-events-auto absolute top-4 right-4">
-                        <Link size={14} />
-                      </a>
-                    )}
-                  </h3>
-                  <p className="text-white/60 text-xs mt-1 leading-relaxed">{project.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {/* Skills */}
-          {user.skills && user.skills.length > 0 && (
-            <div className="mb-5 flex flex-wrap gap-2">
-              {user.skills.map((skill, i) => (
-                <span key={i} className="px-3 py-1.5 bg-white/5 text-white/90 border border-white/10 rounded-lg font-mono text-xs font-semibold">
-                  {skill}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Interests */}
-          {user.interests && user.interests.length > 0 && (
-            <div className="mb-5 flex flex-wrap gap-2">
-              {user.interests.map((interest, i) => (
-                <span key={i} className="px-3 py-1.5 bg-primary/10 text-primary border border-primary/20 rounded-full text-xs font-medium">
-                  {interest}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Looking For */}
           {user.lookingFor && (
-            <div className="mb-6 p-4 bg-white/5 rounded-2xl flex items-center gap-3 border border-white/5">
-              <div className="p-2 bg-black/20 rounded-xl">
+            <div className="mb-6 p-4 bg-white/5 rounded-xl flex items-center gap-3 border border-white/10">
+              <div className="p-2 bg-black/20 rounded-lg">
                 {getLookingForIcon(user.lookingFor)}
               </div>
-              <p className="text-white/70 text-sm font-medium">
+              <p className="text-white/80 text-sm font-medium">
                 Looking for a <span className="text-white font-bold capitalize">{user.lookingFor}</span>
               </p>
             </div>
           )}
 
-          {/* Links */}
-          <div className="flex gap-3 mb-24">
+          {user.about && (
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">About</h3>
+              <p className="text-white/80 text-sm leading-relaxed">{user.about}</p>
+            </div>
+          )}
+
+          {projects.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-3">Projects</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {projects.map((project, i) => (
+                  <div key={i} className="p-4 bg-white/5 border border-white/10 rounded-xl relative group">
+                    <h4 className="text-white font-bold text-sm flex items-center gap-2 pr-6">
+                      {project.title}
+                    </h4>
+                    <p className="text-white/60 text-xs mt-1.5 leading-relaxed">{project.description}</p>
+                    {project.link && (
+                      <a href={project.link} target="_blank" rel="noreferrer" className="text-white/40 hover:text-primary pointer-events-auto absolute top-3 right-3 transition-colors">
+                        <Link size={14} />
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {skills.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">Skills</h3>
+              <div className="flex flex-wrap gap-2">
+                {skills.map((skill, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-base-300 text-white/90 rounded-lg font-mono text-xs font-semibold">
+                    {skill}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {interests.length > 0 && (
+            <div className="mb-8">
+              <h3 className="text-white/50 text-xs uppercase tracking-wider font-bold mb-2">Interests</h3>
+              <div className="flex flex-wrap gap-2">
+                {interests.map((interest, i) => (
+                  <span key={i} className="px-3 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-medium">
+                    {interest}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="flex gap-3 mt-auto mb-16 xl:mb-0">
             {user.githubUrl && (
-              <a href={user.githubUrl} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white/5 hover:bg-white/10 text-white/80 rounded-xl transition-colors text-sm font-medium border border-white/10 pointer-events-auto">
+              <a href={user.githubUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 text-white/80 rounded-xl text-sm font-medium border border-white/10 pointer-events-auto cursor-pointer hover:bg-white/10 transition-colors">
                 <GitBranch size={16} /> GitHub
               </a>
             )}
             {user.linkedinUrl && (
-              <a href={user.linkedinUrl} target="_blank" rel="noreferrer" className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-white/5 hover:bg-white/10 text-white/80 rounded-xl transition-colors text-sm font-medium border border-white/10 pointer-events-auto">
+              <a href={user.linkedinUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 px-4 py-2 bg-white/5 text-white/80 rounded-xl text-sm font-medium border border-white/10 pointer-events-auto cursor-pointer hover:bg-white/10 transition-colors">
                 <Link size={16} /> LinkedIn
               </a>
             )}
           </div>
-        </div>
+          </div>
+          
+          {/* Floating Action Buttons placed AT THE BOTTOM right */}
+          <div className="absolute bottom-6 right-6 flex justify-end gap-4 pointer-events-none z-20">
+            <button 
+              onClick={() => handleButtonSwipe("dislike")}
+              className="btn btn-circle bg-[#1e1e24] shadow-2xl border border-white/10 text-error hover:bg-error hover:border-error hover:text-white transition-all transform hover:scale-110 pointer-events-auto"
+              disabled={index !== 0}
+            >
+              <X size={24} strokeWidth={3} />
+            </button>
+            <button 
+              onClick={() => handleButtonSwipe("like")}
+              className="btn btn-circle bg-[#1e1e24] shadow-2xl border border-white/10 text-success hover:bg-success hover:border-success hover:text-white transition-all transform hover:scale-110 pointer-events-auto"
+              disabled={index !== 0}
+            >
+              <Heart size={24} strokeWidth={3} fill="currentColor" />
+            </button>
+          </div>
 
-        {/* Floating Action Buttons */}
-        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-8 pointer-events-none">
-          <button 
-            onClick={() => handleButtonSwipe("dislike")}
-            className="btn btn-circle w-16 h-16 bg-[#1e1e24] shadow-2xl border-2 border-error/50 text-error hover:bg-error hover:text-white transition-all transform hover:scale-110 pointer-events-auto"
-            disabled={index !== 0}
-          >
-            <X size={32} strokeWidth={3} />
-          </button>
-          <button 
-            onClick={() => handleButtonSwipe("like")}
-            className="btn btn-circle w-16 h-16 bg-[#1e1e24] shadow-2xl border-2 border-success/50 text-success hover:bg-success hover:text-white transition-all transform hover:scale-110 pointer-events-auto"
-            disabled={index !== 0}
-          >
-            <Heart size={32} strokeWidth={3} fill="currentColor" />
-          </button>
         </div>
 
       </div>
@@ -244,7 +256,7 @@ const Feed = () => {
     if (!hasMore && page !== 1) return;
     try {
       dispatch(setFeedLoading(true));
-      const res = await axiosInstance.get(BASE_URL + "/user/feed?page=" + page + "&limit=10", {
+      const res = await axiosInstance.get(BASE_URL + "/user/feed?page=" + page + "&limit=10&t=" + Date.now(), {
         withCredentials: true,
       });
       if (page === 1) {
@@ -289,8 +301,8 @@ const Feed = () => {
   }
 
   return (
-    <div className="flex justify-center items-center h-full min-h-[calc(100vh-80px)] py-6 px-4 overflow-hidden">
-      <div className="relative w-full max-w-[450px] h-[750px] max-h-[85vh] flex justify-center">
+    <div className="flex justify-center items-center min-h-[calc(100vh-80px)] py-6 px-4 overflow-hidden relative">
+      <div className="relative w-full max-w-[800px] flex justify-center h-[75vh] max-h-[800px] min-h-[500px]">
         {users.slice(0, 3).reverse().map((user, reversedIndex) => {
           const actualIndex = Math.min(users.length, 3) - 1 - reversedIndex;
           return (
