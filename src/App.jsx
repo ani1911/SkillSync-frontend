@@ -3,20 +3,14 @@ import Body from "./Body";
 import Login from "./Login";
 import Signup from "./Signup";
 import Profile from "./Profile";
+import Feed from "./Feed";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Body />}>
-          <Route
-            index
-            element={
-              <div className="flex justify-center my-20 text-base-content/60">
-                Feed is coming next…
-              </div>
-            }
-          />
+          <Route index element={<Feed />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
           <Route path="profile" element={<Profile />} />
