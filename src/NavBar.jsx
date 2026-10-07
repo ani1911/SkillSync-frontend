@@ -26,7 +26,7 @@ const NavBar = () => {
       <div className="flex-1">
         <div 
           onClick={() => navigate("/")} 
-          className="flex items-center gap-2 cursor-pointer group"
+          className="inline-flex items-center gap-2 cursor-pointer group"
         >
           <img
             src={logo}

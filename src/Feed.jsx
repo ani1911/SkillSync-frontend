@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFeed, removeFromFeed, setFeedLoading, appendFeed } from "./store/feedSlice";
 import axiosInstance from "./utils/axios";
@@ -247,6 +247,8 @@ const UserCard = ({ user, onSwipe, index }) => {
 const Feed = () => {
   const dispatch = useDispatch();
   const { users, page, hasMore, loading } = useSelector((store) => store.feed);
+  const loggedInUser = useSelector((store) => store.user);
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
   useEffect(() => {
     fetchFeed();
@@ -256,7 +258,8 @@ const Feed = () => {
     if (!hasMore && page !== 1) return;
     try {
       dispatch(setFeedLoading(true));
-      const res = await axiosInstance.get(BASE_URL + "/user/feed?page=" + page + "&limit=10&t=" + Date.now(), {
+      const endpoint = loggedInUser ? "/user/feed" : "/feed";
+      const res = await axiosInstance.get(BASE_URL + `${endpoint}?page=` + page + "&limit=10&t=" + Date.now(), {
         withCredentials: true,
       });
       if (page === 1) {
@@ -272,6 +275,13 @@ const Feed = () => {
   };
 
   const handleSwipe = async (action, userId) => {
+    if (!loggedInUser) {
+      // Just visual remove for unauthenticated users and show modal
+      dispatch(removeFromFeed(userId));
+      setShowSignupModal(true);
+      return;
+    }
+    
     try {
       dispatch(removeFromFeed(userId));
       await axiosInstance.post(BASE_URL + "/match/" + action + "/" + userId, {}, { withCredentials: true });
@@ -301,7 +311,7 @@ const Feed = () => {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-80px)] py-6 px-4 overflow-hidden relative">
+    <div className="flex-1 w-full flex flex-col justify-center items-center py-6 px-4 overflow-hidden relative">
       <div className="relative w-full max-w-[800px] flex justify-center h-[75vh] max-h-[800px] min-h-[500px]">
         {users.slice(0, 3).reverse().map((user, reversedIndex) => {
           const actualIndex = Math.min(users.length, 3) - 1 - reversedIndex;
@@ -315,6 +325,37 @@ const Feed = () => {
           );
         })}
       </div>
+
+      {/* Sign Up Modal for Unauthenticated Users */}
+      {showSignupModal && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-[#1e1e24] p-8 rounded-[2rem] border border-white/10 shadow-2xl max-w-md w-full text-center relative overflow-hidden">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <button onClick={() => setShowSignupModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
+              <X size={20} />
+            </button>
+
+            <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Heart size={32} className="text-primary" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Don't lose this connection!</h2>
+            <p className="text-white/60 mb-8 text-sm leading-relaxed">
+              Create an account or login to connect with this developer and start collaborating on awesome projects.
+            </p>
+            
+            <div className="flex flex-col gap-3">
+              <a href="/signup" className="px-6 py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20 w-full">
+                Create Free Account
+              </a>
+              <a href="/login" className="px-6 py-3.5 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl transition-all border border-white/10 w-full">
+                Log In
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
