@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
@@ -8,6 +8,7 @@ import { addUser, removeUser } from "./store/userSlice";
 const Body = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [authLoading, setAuthLoading] = useState(true);
 
   useEffect(() => {
     const fetchLoggedInUser = async () => {
@@ -17,11 +18,14 @@ const Body = () => {
       } catch (err) {
         if (err.response?.status === 400 || err.response?.status === 401) {
           dispatch(removeUser());
-          if (window.location.pathname !== "/signup") {
+          const publicPaths = ["/", "/signup", "/login"];
+          if (!publicPaths.includes(window.location.pathname)) {
              navigate("/login");
           }
         }
         console.error(err);
+      } finally {
+        setAuthLoading(false);
       }
     };
     fetchLoggedInUser();
@@ -34,10 +38,18 @@ const Body = () => {
       <div className="absolute bottom-[-20%] left-[20%] w-[600px] h-[600px] bg-accent/20 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-4000 z-0"></div>
       
       <div className="relative z-10 flex flex-col min-h-screen">
-        <NavBar />
-        <main className="flex-grow flex flex-col">
-          <Outlet />
-        </main>
+        {authLoading ? (
+          <div className="flex-grow flex items-center justify-center">
+            <span className="loading loading-spinner text-primary loading-lg"></span>
+          </div>
+        ) : (
+          <>
+            <NavBar />
+            <main className="flex-grow flex flex-col">
+              <Outlet />
+            </main>
+          </>
+        )}
       </div>
     </div>
   );
