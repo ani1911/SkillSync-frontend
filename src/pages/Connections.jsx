@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import api from "../utils/axios";
 import { ProfileCard } from "./Profile";
 import { X, CheckCircle, XCircle } from "lucide-react";
+import { decrementPendingCount } from "../store/requestsSlice";
 
 const Connections = () => {
+  const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("connections"); // 'requests', 'connections'
   
   const [requests, setRequests] = useState([]);
@@ -37,6 +40,7 @@ const Connections = () => {
     try {
       await api.patch(`/connection/${action}/${requestId}`);
       setRequests(requests.filter(r => r._id !== requestId));
+      dispatch(decrementPendingCount());
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Failed action");

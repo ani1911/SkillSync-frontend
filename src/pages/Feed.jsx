@@ -41,14 +41,14 @@ const Feed = () => {
 
   const handleSwipe = async (action, userId) => {
     if (!loggedInUser) {
-      // Just visual remove for unauthenticated users and show modal
+
       dispatch(removeFromFeed(userId));
       setShowSignupModal(true);
       return;
     }
-    
+
     const swipedUser = users.find(u => u._id === userId);
-    
+
     try {
       dispatch(removeFromFeed(userId));
       const res = await axiosInstance.post(BASE_URL + "/match/" + action + "/" + userId, {}, { withCredentials: true });
@@ -60,7 +60,7 @@ const Feed = () => {
     }
   };
 
-  if (loading && users.length === 0) {
+  if (loading && users.length === 0 && !matchedUser) {
     return (
       <div className="flex justify-center items-center h-[70vh]">
         <span className="loading loading-ring loading-lg text-primary"></span>
@@ -68,7 +68,7 @@ const Feed = () => {
     );
   }
 
-  if (users.length === 0) {
+  if (users.length === 0 && !matchedUser) {
     return (
       <div className="flex flex-col items-center justify-center h-[70vh] text-center px-4">
         <div className="w-48 h-48 bg-base-200 rounded-full flex items-center justify-center mb-6 shadow-inner animate-pulse">
@@ -86,9 +86,9 @@ const Feed = () => {
         {users.slice(0, 3).reverse().map((user, reversedIndex) => {
           const actualIndex = Math.min(users.length, 3) - 1 - reversedIndex;
           return (
-            <UserCard 
-              key={user._id} 
-              user={user} 
+            <UserCard
+              key={user._id}
+              user={user}
               index={actualIndex}
               onSwipe={handleSwipe}
             />
@@ -96,12 +96,12 @@ const Feed = () => {
         })}
       </div>
 
-      {/* Sign Up Modal for Unauthenticated Users */}
+
       {showSignupModal && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="bg-[#1e1e24] p-8 rounded-[2rem] border border-white/10 shadow-2xl max-w-md w-full text-center relative overflow-hidden">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             <button onClick={() => setShowSignupModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
               <X size={20} />
             </button>
@@ -109,12 +109,12 @@ const Feed = () => {
             <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <Heart size={32} className="text-primary" />
             </div>
-            
+
             <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">Don't lose this connection!</h2>
             <p className="text-white/60 mb-8 text-sm leading-relaxed">
               Create an account or login to connect with this developer and start collaborating on awesome projects.
             </p>
-            
+
             <div className="flex flex-col gap-3">
               <a href="/signup" className="px-6 py-3.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl transition-all shadow-lg shadow-primary/20 w-full">
                 Create Free Account
@@ -132,7 +132,7 @@ const Feed = () => {
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in zoom-in duration-300">
           <div className="bg-[#1e1e24] p-8 rounded-[2rem] border border-white/10 shadow-2xl max-w-lg w-full text-center relative overflow-hidden flex flex-col items-center">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-success/20 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             <button onClick={() => setMatchedUser(null)} className="absolute top-4 right-4 text-white/50 hover:text-white transition-colors">
               <X size={24} />
             </button>
@@ -144,7 +144,7 @@ const Feed = () => {
               </div>
               <img src={matchedUser.photourl || FALLBACK_AVATAR} alt={matchedUser.firstName} className="w-24 h-24 rounded-full border-4 border-success object-cover z-10 shadow-xl" />
             </div>
-            
+
             <h2 className="text-4xl font-black text-white mb-2 tracking-tight drop-shadow-md">It's a Match!</h2>
             <p className="text-white/80 mb-6 text-sm font-medium">
               You and {matchedUser.firstName} have liked each other.
@@ -152,7 +152,7 @@ const Feed = () => {
 
             <div className="w-full text-left bg-white/5 p-4 rounded-xl border border-white/10 mb-6">
               <label className="text-white/60 text-xs uppercase tracking-wider font-bold mb-2 block">Personalized Outreach</label>
-              <textarea 
+              <textarea
                 className="w-full bg-black/20 text-white rounded-lg p-3 outline-none border border-white/10 focus:border-success transition-colors resize-none"
                 rows="3"
                 placeholder={`Don't just say hi. Tell ${matchedUser.firstName} why you want to collaborate!`}
@@ -160,8 +160,8 @@ const Feed = () => {
                 onChange={(e) => setConnectionMessage(e.target.value)}
               ></textarea>
             </div>
-            
-            <button 
+
+            <button
               onClick={async () => {
                 try {
                   setSendingConnection(true);

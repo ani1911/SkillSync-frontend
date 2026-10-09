@@ -1,15 +1,29 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import { Users, Globe, User as UserIcon, Settings, LogOut } from "lucide-react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Users, Globe, User as UserIcon, Settings, LogOut, Home } from "lucide-react";
 import logo from "../assets/logo.png";
 import api from "../utils/axios";
 import { FALLBACK_AVATAR } from "../utils/constants";
 import { removeUser } from "../store/userSlice";
+import { setPendingCount } from "../store/requestsSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);
+  const { pendingCount } = useSelector((store) => store.requests || { pendingCount: 0 });
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (user) {
+      api.get("/user/requests/pending")
+        .then((res) => {
+          dispatch(setPendingCount(res.data.count));
+        })
+        .catch(console.error);
+    }
+  }, [user, location.pathname, dispatch]);
 
   const handleLogout = async () => {
     try {
@@ -39,13 +53,22 @@ const NavBar = () => {
       {user ? (
         <div className="flex items-center gap-6">
           <div className="hidden md:flex items-center gap-2">
+            <Link to="/" className="px-4 py-2 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all flex items-center gap-2">
+              <Home size={16} />
+              Feed
+            </Link>
             <Link to="/matches" className="px-4 py-2 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all flex items-center gap-2">
               <Users size={16} />
               Matches
             </Link>
-            <Link to="/connections" className="px-4 py-2 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all flex items-center gap-2">
+            <Link to="/connections" className="px-4 py-2 text-sm font-bold text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all flex items-center gap-2 relative">
               <Globe size={16} />
               Network
+              {pendingCount > 0 && (
+                <span className="absolute top-1 -right-1 bg-error text-white text-[10px] font-black px-1.5 py-0.5 rounded-full shadow-lg border-2 border-[#1e1e24] min-w-[18px] text-center animate-pulse">
+                  {pendingCount}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -83,15 +106,28 @@ const NavBar = () => {
                 </Link>
               </li>
               <li className="md:hidden">
+                <Link to="/" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
+                  <Home size={18} className="opacity-70" />
+                  Feed
+                </Link>
+              </li>
+              <li className="md:hidden">
                 <Link to="/matches" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
                   <Users size={18} className="opacity-70" />
                   Matches
                 </Link>
               </li>
               <li className="md:hidden">
-                <Link to="/connections" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
-                  <Globe size={18} className="opacity-70" />
-                  Network
+                <Link to="/connections" className="hover:bg-primary/20 hover:text-primary transition-colors py-3 relative">
+                  <div className="flex items-center gap-2">
+                    <Globe size={18} className="opacity-70" />
+                    Network
+                    {pendingCount > 0 && (
+                      <span className="bg-error text-white text-[10px] font-black px-1.5 py-0.5 rounded-full ml-1">
+                        {pendingCount}
+                      </span>
+                    )}
+                  </div>
                 </Link>
               </li>
               <li>

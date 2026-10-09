@@ -7,6 +7,12 @@
   --animate-blob: blob 7s infinite;
 }
 
+@layer base {
+  button:not(:disabled), a:not(:disabled) {
+    cursor: pointer !important;
+  }
+}
+
 @keyframes blob {
   0% { transform: translate(0px, 0px) scale(1); }
   33% { transform: translate(30px, -50px) scale(1.1); }
