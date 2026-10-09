@@ -91,9 +91,7 @@ const Login = () => {
                 required
               />
             </div>
-            <label className="label py-1 justify-end">
-              <a href="#" className="label-text-alt link link-hover text-primary font-medium hover:text-primary/80 transition-colors">Forgot password?</a>
-            </label>
+
           </div>
 
           <button

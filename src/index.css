@@ -5,9 +5,11 @@
 
 @theme {
   --animate-blob: blob 7s infinite;
+  --font-sans: 'Outfit', 'Inter', sans-serif;
 }
 
 @layer base {
+  
   button:not(:disabled), a:not(:disabled) {
     cursor: pointer !important;
   }

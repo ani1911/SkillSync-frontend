@@ -6,6 +6,7 @@ import Profile from "./pages/Profile";
 import Feed from "./pages/Feed";
 import Matches from "./pages/Matches";
 import Connections from "./pages/Connections";
+import Chat from "./pages/Chat";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
           <Route path="signup" element={<Signup />} />
           <Route path="profile" element={<Profile />} />
           <Route path="matches" element={<Matches />} />
+          <Route path="chat/:userId" element={<Chat />} />
           <Route path="connections" element={<Connections />} />
         </Route>
       </Routes>
