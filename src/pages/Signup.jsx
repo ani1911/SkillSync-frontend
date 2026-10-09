@@ -39,11 +39,11 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center p-4 min-h-[calc(100vh-80px)] py-12">
-      <div className="glass-panel w-full max-w-lg rounded-3xl p-8 shadow-2xl relative z-10">
+    <div className="flex-grow flex items-center justify-center p-4">
+      <div className="glass-panel w-full max-w-lg rounded-3xl p-6 sm:p-8 shadow-2xl relative z-10">
         
-        <div className="text-center mb-8">
-          <h2 className="text-4xl font-black mb-2 tracking-tight">Join SkillSync</h2>
+        <div className="text-center mb-6">
+          <h2 className="text-3xl sm:text-4xl font-black mb-2 tracking-tight">Join SkillSync</h2>
           <p className="text-base-content/60 font-medium">Discover connections and grow your skills.</p>
         </div>
 
@@ -61,7 +61,7 @@ const Signup = () => {
           </div>
         )}
 
-        <form onSubmit={handleSignup} className="space-y-4">
+        <form onSubmit={handleSignup} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-1">
               <label className="label py-1">
@@ -144,7 +144,7 @@ const Signup = () => {
 
           <button
             type="submit"
-            className="btn animated-gradient-btn w-full rounded-xl mt-6 text-base h-12 border-0 shadow-lg"
+            className="btn animated-gradient-btn w-full rounded-xl mt-4 text-base h-12 border-0 shadow-lg"
             disabled={loading || success}
           >
             {loading && <span className="loading loading-spinner"></span>}
@@ -152,7 +152,7 @@ const Signup = () => {
           </button>
         </form>
 
-        <div className="mt-8 text-center text-sm font-medium text-base-content/70">
+        <div className="mt-6 text-center text-sm font-medium text-base-content/70">
           Already have an account?{" "}
           <Link to="/login" className="link link-primary font-bold hover:text-primary/80 transition-colors ml-1">
             Log in

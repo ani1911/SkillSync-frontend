@@ -39,9 +39,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex-grow flex items-center justify-center p-4 min-h-[calc(100vh-80px)]">
+    <div className="flex-grow flex items-center justify-center p-4">
       <div className="glass-panel w-full max-w-md rounded-3xl p-8 transform transition-all hover:scale-[1.01] duration-500 relative z-10">
-        
+
         <div className="text-center mb-8">
           <h2 className="text-4xl font-black mb-2 tracking-tight">Welcome Back</h2>
           <p className="text-base-content/60 font-medium">Log in to sync your skills and connect.</p>
@@ -73,7 +73,7 @@ const Login = () => {
               />
             </div>
           </div>
-          
+
           <div className="space-y-1">
             <label className="label py-1">
               <span className="label-text font-semibold text-base-content/80">Password</span>
