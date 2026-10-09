@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import api from "./utils/axios";
-import { addUser } from "./store/userSlice";
+import api from "../utils/axios";
+import { addUser } from "../store/userSlice";
 
 const getErrorMessage = (data) =>
   typeof data === "string"

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import api from "./utils/axios";
-import { addUser } from "./store/userSlice";
+import api from "../utils/axios";
+import { addUser } from "../store/userSlice";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2, Trash2, Plus } from "lucide-react";
 
 const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";

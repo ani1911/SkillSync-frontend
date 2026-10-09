@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import api from "./utils/axios";
+import api from "../utils/axios";
 import { ProfileCard } from "./Profile";
 import { X, CheckCircle, XCircle } from "lucide-react";
 

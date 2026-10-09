@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { Users, Globe, User as UserIcon, Settings, LogOut } from "lucide-react";
-import logo from "./assets/logo.png";
-import api from "./utils/axios";
-import { FALLBACK_AVATAR } from "./utils/constants";
-import { removeUser } from "./store/userSlice";
+import logo from "../assets/logo.png";
+import api from "../utils/axios";
+import { FALLBACK_AVATAR } from "../utils/constants";
+import { removeUser } from "../store/userSlice";
 
 const NavBar = () => {
   const user = useSelector((store) => store.user);

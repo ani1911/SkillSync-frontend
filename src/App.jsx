@@ -1,11 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Body from "./Body";
-import Login from "./Login";
-import Signup from "./Signup";
-import Profile from "./Profile";
-import Feed from "./Feed";
-import Matches from "./Matches";
-import Connections from "./Connections";
+import Body from "./components/Body";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import Profile from "./pages/Profile";
+import Feed from "./pages/Feed";
+import Matches from "./pages/Matches";
+import Connections from "./pages/Connections";
 
 function App() {
   return (

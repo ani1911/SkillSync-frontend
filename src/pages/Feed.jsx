@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setFeed, removeFromFeed, setFeedLoading, appendFeed } from "./store/feedSlice";
-import axiosInstance from "./utils/axios";
-import { BASE_URL } from "./utils/constants";
+import { setFeed, removeFromFeed, setFeedLoading, appendFeed } from "../store/feedSlice";
+import axiosInstance from "../utils/axios";
+import { BASE_URL } from "../utils/constants";
 import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2 } from "lucide-react";
 

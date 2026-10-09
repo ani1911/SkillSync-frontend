@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "./NavBar";
-import api from "./utils/axios";
-import { addUser, removeUser } from "./store/userSlice";
+import api from "../utils/axios";
+import { addUser, removeUser } from "../store/userSlice";
 
 const Body = () => {
   const dispatch = useDispatch();
