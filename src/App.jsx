@@ -8,18 +8,25 @@ import Matches from "./pages/Matches";
 import Connections from "./pages/Connections";
 import Chat from "./pages/Chat";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Body />}>
+          {/* Public Routes */}
           <Route index element={<Feed />} />
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="matches" element={<Matches />} />
-          <Route path="chat/:userId" element={<Chat />} />
-          <Route path="connections" element={<Connections />} />
+          
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="profile" element={<Profile />} />
+            <Route path="matches" element={<Matches />} />
+            <Route path="chat/:userId" element={<Chat />} />
+            <Route path="connections" element={<Connections />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>
