@@ -8,10 +8,10 @@ import { decrementPendingCount } from "../store/requestsSlice";
 const Connections = () => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("connections"); // 'requests', 'connections'
-  
+
   const [requests, setRequests] = useState([]);
   const [connections, setConnections] = useState([]);
-  
+
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState(null);
 
@@ -48,7 +48,7 @@ const Connections = () => {
   };
 
   return (
-    <div className="flex-grow py-10 px-4 relative z-10 max-w-[1200px] mx-auto w-full">
+    <div className="flex-grow py-10 px-4 max-w-[1200px] mx-auto w-full">
       <div className="mb-6">
         <h1 className="text-[32px] font-bold text-white tracking-tight">Your Network</h1>
         <p className="text-[14px] text-white/50 mt-1">Manage your active connections and premium requests.</p>
@@ -56,14 +56,14 @@ const Connections = () => {
 
       {/* Tabs */}
       <div className="flex gap-3 border-b border-white/10 mb-8 pb-4 overflow-x-auto">
-        <button 
-          onClick={() => setActiveTab('connections')} 
+        <button
+          onClick={() => setActiveTab('connections')}
           className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'connections' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
         >
           My Connections
         </button>
-        <button 
-          onClick={() => setActiveTab('requests')} 
+        <button
+          onClick={() => setActiveTab('requests')}
           className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all whitespace-nowrap ${activeTab === 'requests' ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-white/5 text-white/50 hover:bg-white/10 hover:text-white'}`}
         >
           Pending Requests
@@ -84,35 +84,39 @@ const Connections = () => {
               <p className="text-white/50">You have no pending premium requests.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex flex-col gap-4 max-w-4xl">
               {requests.map(req => (
-                <div key={req._id} className="bg-[#1e1e24] rounded-2xl border border-white/10 p-6 flex flex-col gap-5 shadow-xl hover:border-white/20 transition-all">
-                  <div className="flex items-center gap-4">
-                    <img src={req.fromUserId.photourl} className="w-16 h-16 rounded-full object-cover shadow-lg" />
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-lg text-white truncate">{req.fromUserId.firstName} {req.fromUserId.lastName}</h3>
-                      <p className="text-xs text-white/60 truncate">{req.fromUserId.headline}</p>
+                <div key={req._id} className="bg-[#1e1e24] rounded-2xl border border-white/10 p-4 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6 shadow-xl hover:bg-white/5 transition-all group">
+                  
+                  {/* Left: Avatar & Info */}
+                  <div className="flex items-center gap-4 w-full lg:w-1/3 min-w-[250px]">
+                    <div className="relative shrink-0">
+                      <img src={req.fromUserId.photourl} className="w-14 h-14 rounded-full object-cover shadow-lg border border-[#1e1e24]" />
+                      <div className="absolute -bottom-1 -right-1 bg-primary text-white rounded-full w-5 h-5 flex items-center justify-center border-2 border-[#1e1e24]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                      </div>
                     </div>
-                    <button 
-                      onClick={() => setSelectedMatch({...req.fromUserId, isPreviewOnly: true})}
-                      className="px-3 py-1.5 bg-white/5 hover:bg-white/10 text-white/80 rounded-lg text-xs font-semibold transition-colors"
-                    >
-                      View Profile
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-base text-white truncate hover:text-primary cursor-pointer transition-colors" onClick={() => setSelectedMatch({...req.fromUserId, isPreviewOnly: true})}>
+                        {req.fromUserId.firstName} {req.fromUserId.lastName}
+                      </h3>
+                      <p className="text-xs text-white/50 truncate">{req.fromUserId.headline}</p>
+                    </div>
+                  </div>
+
+                  {/* Middle: Message */}
+                  <div className="flex-1 w-full bg-black/20 rounded-xl p-3 border border-white/5 relative">
+                    <p className="text-sm text-white/80 italic line-clamp-2">"{req.message || 'I would love to connect and collaborate!'}"</p>
+                  </div>
+
+                  {/* Right: Actions */}
+                  <div className="flex items-center justify-end gap-3 w-full lg:w-auto shrink-0 mt-2 lg:mt-0">
+                    <button onClick={() => handleRequestAction(req._id, 'reject')} className="w-10 h-10 rounded-full flex items-center justify-center bg-white/5 hover:bg-rose-500/20 text-white/40 hover:text-rose-400 transition-colors tooltip tooltip-bottom" data-tip="Decline">
+                      <XCircle size={20} />
                     </button>
-                  </div>
-                  
-                  <div className="bg-primary/5 p-4 rounded-xl border border-primary/20 relative">
-                     <div className="absolute top-0 left-4 -translate-y-1/2 px-2 bg-[#1e1e24] text-[10px] font-bold text-primary uppercase tracking-widest">Premium Request Message</div>
-                     <p className="text-sm text-white/90 italic leading-relaxed">"{req.message || 'I would love to connect and collaborate!'}"</p>
-                  </div>
-                  
-                  <div className="flex justify-end gap-3 mt-2">
-                     <button onClick={() => handleRequestAction(req._id, 'reject')} className="px-5 py-2 bg-white/5 hover:bg-rose-500/20 hover:text-rose-400 text-white/60 font-semibold rounded-xl text-sm transition-all flex items-center gap-2">
-                       <XCircle size={16} /> Decline
-                     </button>
-                     <button onClick={() => handleRequestAction(req._id, 'accept')} className="px-5 py-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
-                       <CheckCircle size={16} /> Accept Request
-                     </button>
+                    <button onClick={() => handleRequestAction(req._id, 'accept')} className="px-6 py-2.5 bg-primary hover:bg-primary/90 text-white font-bold rounded-full text-sm shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                      Accept
+                    </button>
                   </div>
                 </div>
               ))}
@@ -132,9 +136,9 @@ const Connections = () => {
               {connections.map(conn => {
                 const user = conn.user;
                 return (
-                  <div 
-                    key={conn._id} 
-                    onClick={() => setSelectedMatch({...user, isConnection: true})} 
+                  <div
+                    key={conn._id}
+                    onClick={() => setSelectedMatch({ ...user, isConnection: true })}
                     className="bg-[#1e1e24] rounded-2xl border border-emerald-500/30 overflow-hidden cursor-pointer hover:border-emerald-500 transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(16,185,129,0.1)] group flex flex-col"
                   >
                     <div className="h-48 overflow-hidden relative shrink-0">
@@ -159,20 +163,20 @@ const Connections = () => {
       )}
 
       {selectedMatch && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start p-4 bg-black/80 backdrop-blur-sm overflow-y-auto pt-10 pb-20">
-          <div className="w-full max-w-[800px] relative animate-in fade-in zoom-in duration-200 mt-10">
-            <button 
-              onClick={() => setSelectedMatch(null)}
-              className="absolute -top-12 right-0 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors z-50"
-            >
-              <X size={20} />
-            </button>
-
+        <div className="fixed inset-0 z-40 flex flex-col items-center justify-start p-4 bg-black/80 backdrop-blur-sm overflow-y-auto pt-28 pb-20 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="w-full max-w-[800px] relative animate-in fade-in zoom-in duration-200 mt-2">
             {/* Profile Card */}
-            <div className={selectedMatch.isConnection ? "pointer-events-auto" : "pointer-events-none"}>
-              <ProfileCard 
-                data={selectedMatch.isConnection ? selectedMatch : {...selectedMatch, githubUrl: null, linkedinUrl: null, portfolioUrl: null}} 
-                previewMode="desktop" 
+            <div className="relative">
+              <button
+                onClick={() => setSelectedMatch(null)}
+                className="absolute -top-4 -right-4 md:-right-6 md:-top-6 w-12 h-12 bg-rose-500 hover:bg-rose-600 rounded-full flex items-center justify-center text-white shadow-xl hover:scale-110 transition-all z-50 border-4 border-[#1e1e24]"
+              >
+                <X size={24} />
+              </button>
+              
+              <ProfileCard
+                data={selectedMatch.isConnection ? selectedMatch : { ...selectedMatch, githubUrl: null, linkedinUrl: null, portfolioUrl: null }}
+                previewMode="desktop"
               />
             </div>
 
@@ -182,7 +186,7 @@ const Connections = () => {
                 <div className="absolute top-0 left-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 -translate-x-1/2" />
                 <div className="relative z-10 text-center sm:text-left mb-4 sm:mb-0">
                   <h3 className="text-lg font-bold text-emerald-400 flex items-center justify-center sm:justify-start gap-2">
-                    <CheckCircle size={20}/> Connection Unlocked!
+                    <CheckCircle size={20} /> Connection Unlocked!
                   </h3>
                   <p className="text-sm text-white/60 mt-1">You have full access to their professional links. Chat coming soon!</p>
                 </div>
