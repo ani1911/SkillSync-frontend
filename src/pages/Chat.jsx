@@ -19,6 +19,8 @@ const Chat = () => {
   // Future: Chat history state will go here!
   const [chatHistory, setChatHistory] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [connectionStatus, setConnectionStatus] = useState(null);
+  const [isConnectionSender, setIsConnectionSender] = useState(false);
 
   useEffect(() => {
     if (!matchUser) {
@@ -62,6 +64,8 @@ const Chat = () => {
         const res = await api.get(`/chat/${matchId}`);
         if (res.data.success) {
           setChatHistory(res.data.data);
+          setConnectionStatus(res.data.connectionStatus);
+          setIsConnectionSender(res.data.isSender);
         }
       } catch (err) {
         console.error("Failed to load chat history", err);
@@ -91,6 +95,8 @@ const Chat = () => {
       alert("Premium Connection Request Sent!");
       setShowRequestModal(false);
       setRequestMessage("");
+      setConnectionStatus("pending");
+      setIsConnectionSender(true);
     } catch (err) {
       console.error(err);
       alert(err.response?.data?.message || "Failed to send request");
@@ -273,9 +279,16 @@ const Chat = () => {
                 </p>
               </div>
             </div>
-            <button onClick={() => setShowRequestModal(true)} className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-primary/20 shrink-0">
-              Premium Request
-            </button>
+            {/* Chat Header Actions */}
+            {connectionStatus !== "accepted" && (
+              <button 
+                onClick={() => setShowRequestModal(true)} 
+                disabled={connectionStatus === "pending"}
+                className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-primary/20 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {connectionStatus === "pending" ? "Request Pending" : "Premium Request"}
+              </button>
+            )}
           </div>
 
           {/* Chat Messages Area */}
@@ -321,20 +334,37 @@ const Chat = () => {
 
           {/* Chat Input Footer */}
           <div className="p-4 sm:p-6 bg-[#16161a] border-t border-white/10 shrink-0">
-            <form onSubmit={handleSendMessage} className="flex flex-col gap-3">
-              <div className="flex gap-3">
-                <input
-                  type="text"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  placeholder={`Message ${matchUser.firstName}...`}
-                  className="flex-1 bg-[#1e1e24] text-white text-sm rounded-xl px-5 py-3 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-                <button type="submit" disabled={!message.trim()} className="px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center shrink-0">
-                  <Send size={18} />
-                </button>
+            {chatHistory.length >= 5 && connectionStatus !== "accepted" ? (
+              <div className="bg-[#2a2a32] border border-white/10 rounded-xl p-4 text-center">
+                <p className="text-white/80 text-sm mb-2">
+                  You've reached the free message limit for this match.
+                </p>
+                {connectionStatus === "pending" ? (
+                  <div className="px-4 py-2 bg-white/10 text-white/50 rounded-xl text-xs font-bold border border-white/10 inline-block">
+                    {isConnectionSender ? "Waiting for them to accept your request..." : "Check your Network tab to accept their request!"}
+                  </div>
+                ) : (
+                  <button onClick={() => setShowRequestModal(true)} className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-primary/20">
+                    Send Premium Request to Continue
+                  </button>
+                )}
               </div>
-            </form>
+            ) : (
+              <form onSubmit={handleSendMessage} className="flex flex-col gap-3">
+                <div className="flex gap-3">
+                  <input
+                    type="text"
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    placeholder={`Message ${matchUser.firstName}...`}
+                    className="flex-1 bg-[#1e1e24] text-white text-sm rounded-xl px-5 py-3 border border-white/10 focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+                  />
+                  <button type="submit" disabled={!message.trim()} className="px-5 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold transition-all disabled:opacity-50 flex items-center justify-center shrink-0">
+                    <Send size={18} />
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
 
         </div>
