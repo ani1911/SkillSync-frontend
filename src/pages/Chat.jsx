@@ -359,10 +359,32 @@ const Chat = () => {
             )}
 
             {chatHistory.map((msg, index) => {
-              const isMe = msg.senderId._id === user._id || msg.senderId === user._id;
+              const isAi = msg.isAi;
+              const isMe = !isAi && (msg.senderId._id === user._id || msg.senderId === user._id);
               
               // Format the timestamp
               const messageTime = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+
+              if (isAi) {
+                return (
+                  <div key={index} className="flex gap-3 max-w-[85%] mt-6 self-start w-full">
+                    <div className="flex flex-col gap-1 items-start w-full">
+                      <div className="flex items-center gap-2 px-1">
+                        <span className="text-[10px] bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent font-bold uppercase tracking-wider flex items-center gap-1">
+                          ✨ AI Assistant
+                        </span>
+                        {messageTime && (
+                          <span className="text-[9px] text-white/30 font-medium">{messageTime}</span>
+                        )}
+                      </div>
+                      <div className="rounded-2xl px-5 py-4 text-sm shadow-[0_0_20px_rgba(16,185,129,0.1)] border border-emerald-500/30 bg-[#16161a] text-white/90 rounded-tl-sm w-full leading-relaxed whitespace-pre-wrap relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-cyan-500"></div>
+                        {msg.text}
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <div key={index} className={`flex gap-3 max-w-[85%] mt-4 ${isMe ? "self-end flex-row-reverse" : "self-start"}`}>
