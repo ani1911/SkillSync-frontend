@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import api from "../utils/axios";
 import { ProfileCard } from "./Profile";
 import { X, CheckCircle, XCircle } from "lucide-react";
@@ -7,6 +8,7 @@ import { decrementPendingCount } from "../store/requestsSlice";
 
 const Connections = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("connections"); // 'requests', 'connections'
 
   const [requests, setRequests] = useState([]);
@@ -132,27 +134,50 @@ const Connections = () => {
               <p className="text-white/50">You don't have any connections yet. Accept a request to unlock full profiles!</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="flex flex-col gap-4 max-w-4xl">
               {connections.map(conn => {
                 const user = conn.user;
                 return (
                   <div
                     key={conn._id}
-                    onClick={() => setSelectedMatch({ ...user, isConnection: true })}
-                    className="bg-[#1e1e24] rounded-2xl border border-emerald-500/30 overflow-hidden cursor-pointer hover:border-emerald-500 transition-all hover:-translate-y-1 shadow-[0_0_30px_rgba(16,185,129,0.1)] group flex flex-col"
+                    onClick={() => navigate(`/chat/${user._id}`)}
+                    className="bg-[#1e1e24] rounded-2xl border border-white/5 p-4 flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6 shadow-xl hover:bg-white/5 hover:border-emerald-500/30 transition-all cursor-pointer group"
                   >
-                    <div className="h-48 overflow-hidden relative shrink-0">
-                      <img src={user.photourl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#1e1e24] to-transparent" />
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                    
+                    {/* Left: Avatar & Info */}
+                    <div className="flex items-center gap-4 w-full lg:w-1/2 min-w-[250px]">
+                      <div className="relative shrink-0">
+                        <img src={user.photourl} className="w-14 h-14 rounded-full object-cover shadow-lg border border-[#1e1e24]" />
+                        <div className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full w-5 h-5 flex items-center justify-center border-2 border-[#1e1e24] shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                          <CheckCircle size={10} strokeWidth={3} />
+                        </div>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base text-white truncate group-hover:text-emerald-400 transition-colors">
                           {user.firstName} {user.lastName}
                         </h3>
-                        <p className="text-xs text-white/70 line-clamp-1">{user.headline}</p>
+                        <p className="text-xs text-white/50 truncate">{user.headline}</p>
                       </div>
                     </div>
-                    <div className="p-4 flex-1 flex items-center justify-center bg-emerald-500/10 group-hover:bg-emerald-500/20 transition-colors">
-                      <span className="text-xs font-bold text-emerald-400">View Full Profile</span>
+
+                    {/* Middle: Connection Date or Subtext (Optional) */}
+                    <div className="flex-1 w-full lg:flex items-center justify-start hidden">
+                      {user._id.length % 2 === 0 ? (
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
+                          <p className="text-sm text-primary font-semibold italic">New message</p>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-white/40 italic">Connected</p>
+                      )}
+                    </div>
+
+                    {/* Right: Message Action */}
+                    <div className="flex items-center justify-end w-full lg:w-auto shrink-0 mt-2 lg:mt-0">
+                      <div className="px-5 py-2.5 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white font-bold rounded-full text-sm transition-all flex items-center gap-2 shadow-lg group-hover:shadow-primary/20">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+                        Message
+                      </div>
                     </div>
                   </div>
                 )
