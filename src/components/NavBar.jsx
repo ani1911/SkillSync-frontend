@@ -36,7 +36,7 @@ const NavBar = () => {
   };
 
   return (
-    <div className="navbar glass-nav sticky top-0 z-50 px-4 sm:px-8 py-3 transition-all duration-300">
+    <div className="navbar glass-nav sticky top-0 z-50 px-4 sm:px-8 py-3 transition-all duration-300 border-b border-white/5 bg-[#121214]/80 backdrop-blur-xl">
       <div className="flex-1">
         <div 
           onClick={() => navigate("/")} 
@@ -45,7 +45,7 @@ const NavBar = () => {
           <img
             src={logo}
             alt="skillsync-logo"
-            className="w-48 sm:w-64 h-auto group-hover:scale-105 transition-transform duration-300"
+            className="h-10 sm:h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       </div>

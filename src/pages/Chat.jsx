@@ -3,6 +3,8 @@ import { useParams, Link, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import api from "../utils/axios";
 import { Send, Lock, ArrowLeft, CheckCircle } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { createSocketConnection } from "../utils/socket";
 
 const Chat = () => {
@@ -108,15 +110,15 @@ const Chat = () => {
   const handleSendMessage = (e) => {
     e.preventDefault();
     if (!message.trim() || !socket) return;
-    
+
     const matchId = [user._id, userId].sort().join("_");
-    
+
     socket.emit("sendMessage", {
       matchId,
       senderId: user._id,
       text: message
     });
-    
+
     setMessage("");
   };
 
@@ -130,8 +132,8 @@ const Chat = () => {
   );
 
   return (
-    <div className="flex-grow flex justify-center w-full px-2 py-4 sm:p-6">
-      <div className="w-full max-w-[1400px] bg-[#16161a] rounded-[2rem] border border-white/10 shadow-2xl flex overflow-hidden h-[calc(100vh-120px)]">
+    <div className="w-full flex justify-center px-2 sm:px-6 py-2 overflow-hidden" style={{ height: "calc(100vh - 90px)" }}>
+      <div className="w-full h-full max-w-[1400px] bg-[#16161a] rounded-[2rem] border border-white/10 shadow-2xl flex overflow-hidden">
 
         {/* Left Side: Context Details Pane */}
         <div
@@ -171,7 +173,7 @@ const Chat = () => {
                 <span className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Gender & Age</span>
                 <span className="text-white text-xs font-semibold capitalize">
                   {matchUser.gender || "Unspecified"}{matchUser.age ? `, ${matchUser.age}` : ""}
-                 </span>
+                </span>
               </div>
             </div>
 
@@ -236,76 +238,76 @@ const Chat = () => {
             )}
 
             <div className="flex flex-col gap-3 min-w-0 pb-4">
-               <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">Social Links</h3>
-               <div className="flex flex-col gap-2">
-                 {connectionStatus === "accepted" ? (
-                   <>
-                     {matchUser.githubUrl && (
-                       <a href={matchUser.githubUrl.startsWith('http') ? matchUser.githubUrl : `https://${matchUser.githubUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
-                         <div className="w-8 h-8 rounded-lg bg-black/40 flex items-center justify-center">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-white"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
-                         </div>
-                         <div>
-                           <p className="text-white/90 text-xs font-bold">GitHub Profile</p>
-                           <p className="text-emerald-400 text-[10px]">Unlocked</p>
-                         </div>
-                       </a>
-                     )}
-                     {matchUser.linkedinUrl && (
-                       <a href={matchUser.linkedinUrl.startsWith('http') ? matchUser.linkedinUrl : `https://${matchUser.linkedinUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
-                         <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
-                         </div>
-                         <div>
-                           <p className="text-white/90 text-xs font-bold">LinkedIn Profile</p>
-                           <p className="text-emerald-400 text-[10px]">Unlocked</p>
-                         </div>
-                       </a>
-                     )}
-                     {matchUser.portfolioUrl && (
-                       <a href={matchUser.portfolioUrl.startsWith('http') ? matchUser.portfolioUrl : `https://${matchUser.portfolioUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
-                         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/><path d="M2 12h20"/></svg>
-                         </div>
-                         <div>
-                           <p className="text-white/90 text-xs font-bold">Portfolio Website</p>
-                           <p className="text-emerald-400 text-[10px]">Unlocked</p>
-                         </div>
-                       </a>
-                     )}
-                   </>
-                 ) : (
-                   <>
-                     <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+              <h3 className="text-[10px] font-bold text-white/40 uppercase tracking-widest border-b border-white/10 pb-2">Social Links</h3>
+              <div className="flex flex-col gap-2">
+                {connectionStatus === "accepted" ? (
+                  <>
+                    {matchUser.githubUrl && (
+                      <a href={matchUser.githubUrl.startsWith('http') ? matchUser.githubUrl : `https://${matchUser.githubUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
                         <div className="w-8 h-8 rounded-lg bg-black/40 flex items-center justify-center">
-                           <Lock size={14} className="text-white/40" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" className="text-white"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" /></svg>
                         </div>
                         <div>
-                          <p className="text-white/80 text-xs font-bold">GitHub Profile</p>
-                          <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                          <p className="text-white/90 text-xs font-bold">GitHub Profile</p>
+                          <p className="text-emerald-400 text-[10px]">Unlocked</p>
                         </div>
-                     </div>
-                     <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+                      </a>
+                    )}
+                    {matchUser.linkedinUrl && (
+                      <a href={matchUser.linkedinUrl.startsWith('http') ? matchUser.linkedinUrl : `https://${matchUser.linkedinUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
                         <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
-                           <Lock size={14} className="text-blue-500/60" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" className="text-blue-500"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" /></svg>
                         </div>
                         <div>
-                          <p className="text-white/80 text-xs font-bold">LinkedIn Profile</p>
-                          <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                          <p className="text-white/90 text-xs font-bold">LinkedIn Profile</p>
+                          <p className="text-emerald-400 text-[10px]">Unlocked</p>
                         </div>
-                     </div>
-                     <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+                      </a>
+                    )}
+                    {matchUser.portfolioUrl && (
+                      <a href={matchUser.portfolioUrl.startsWith('http') ? matchUser.portfolioUrl : `https://${matchUser.portfolioUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 transition-all rounded-xl">
                         <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
-                           <Lock size={14} className="text-primary/60" />
+                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10" /><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" /><path d="M2 12h20" /></svg>
                         </div>
                         <div>
-                          <p className="text-white/80 text-xs font-bold">Portfolio Website</p>
-                          <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                          <p className="text-white/90 text-xs font-bold">Portfolio Website</p>
+                          <p className="text-emerald-400 text-[10px]">Unlocked</p>
                         </div>
-                     </div>
-                   </>
-                 )}
-               </div>
+                      </a>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+                      <div className="w-8 h-8 rounded-lg bg-black/40 flex items-center justify-center">
+                        <Lock size={14} className="text-white/40" />
+                      </div>
+                      <div>
+                        <p className="text-white/80 text-xs font-bold">GitHub Profile</p>
+                        <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+                      <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center border border-blue-500/20">
+                        <Lock size={14} className="text-blue-500/60" />
+                      </div>
+                      <div>
+                        <p className="text-white/80 text-xs font-bold">LinkedIn Profile</p>
+                        <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-white/5 border border-white/10 rounded-xl cursor-not-allowed opacity-75">
+                      <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <Lock size={14} className="text-primary/60" />
+                      </div>
+                      <div>
+                        <p className="text-white/80 text-xs font-bold">Portfolio Website</p>
+                        <p className="text-white/40 text-[10px]">Unlock with Premium Request</p>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -335,8 +337,8 @@ const Chat = () => {
             </div>
             {/* Chat Header Actions */}
             {connectionStatus !== "accepted" && (
-              <button 
-                onClick={() => setShowRequestModal(true)} 
+              <button
+                onClick={() => setShowRequestModal(true)}
                 disabled={connectionStatus === "pending"}
                 className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-primary/20 shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
               >
@@ -361,7 +363,7 @@ const Chat = () => {
             {chatHistory.map((msg, index) => {
               const isAi = msg.isAi;
               const isMe = !isAi && (msg.senderId._id === user._id || msg.senderId === user._id);
-              
+
               // Format the timestamp
               const messageTime = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
 
@@ -377,9 +379,11 @@ const Chat = () => {
                           <span className="text-[9px] text-white/30 font-medium">{messageTime}</span>
                         )}
                       </div>
-                      <div className="rounded-2xl px-5 py-4 text-sm shadow-[0_0_20px_rgba(16,185,129,0.1)] border border-emerald-500/30 bg-[#16161a] text-white/90 rounded-tl-sm w-full leading-relaxed whitespace-pre-wrap relative overflow-hidden">
+                      <div className="rounded-2xl px-5 py-4 text-sm shadow-[0_0_20px_rgba(16,185,129,0.1)] border border-emerald-500/30 bg-[#16161a] text-white/90 rounded-tl-sm w-full leading-relaxed relative overflow-hidden prose prose-invert prose-emerald prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-black/50 prose-pre:border prose-pre:border-white/10 prose-td:border-white/10 prose-th:border-white/10 prose-table:border-collapse prose-table:w-full">
                         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 to-cyan-500"></div>
-                        {msg.text}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                          {msg.text}
+                        </ReactMarkdown>
                       </div>
                     </div>
                   </div>
@@ -397,11 +401,10 @@ const Chat = () => {
                         <span className="text-[9px] text-white/30 font-medium">{messageTime}</span>
                       )}
                     </div>
-                    <div className={`rounded-2xl px-5 py-3 text-sm shadow-md border ${
-                      isMe 
-                      ? "bg-primary text-white rounded-tr-sm border-primary" 
-                      : "bg-[#2a2a32] text-white/90 rounded-tl-sm border-white/5"
-                    }`}>
+                    <div className={`rounded-2xl px-5 py-3 text-sm shadow-md border ${isMe
+                        ? "bg-primary text-white rounded-tr-sm border-primary"
+                        : "bg-[#2a2a32] text-white/90 rounded-tl-sm border-white/5"
+                      }`}>
                       {msg.text}
                     </div>
                   </div>
