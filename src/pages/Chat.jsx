@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
 import api from "../utils/axios";
 import { Send, Lock, ArrowLeft } from "lucide-react";
+import { createSocketConnection } from "../utils/socket";
 
 const Chat = () => {
+  const user = useSelector((store) => store.user);
   const { userId } = useParams();
   const location = useLocation();
   const [matchUser, setMatchUser] = useState(location.state?.matchUser || null);
@@ -15,12 +18,57 @@ const Chat = () => {
 
   // Future: Chat history state will go here!
   const [chatHistory, setChatHistory] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     if (!matchUser) {
       fetchMatchUser();
     }
   }, [userId, matchUser]);
+
+  // Handle Socket.io Connection
+  useEffect(() => {
+    // Wait until we have our own user data and the URL param
+    if (!user || !userId) return;
+
+    // 1. Establish the connection to the backend
+    const socketConnection = createSocketConnection();
+    setSocket(socketConnection);
+
+    // 2. Generate a perfectly unique room ID for these two users
+    // Sorting the IDs guarantees the string is identical for BOTH users!
+    const matchId = [user._id, userId].sort().join("_");
+
+    // 3. Tell the server to put us in this private room
+    socketConnection.emit("joinChat", { matchId });
+
+    // 4. Listen for incoming messages
+    socketConnection.on("receiveMessage", (newMessage) => {
+      setChatHistory((prev) => [...prev, newMessage]);
+    });
+
+    // Cleanup: Disconnect the socket when leaving the chat page
+    return () => {
+      socketConnection.disconnect();
+    };
+  }, [userId, user]);
+
+  // Fetch Chat History when component mounts
+  useEffect(() => {
+    if (!user || !userId) return;
+    const fetchHistory = async () => {
+      try {
+        const matchId = [user._id, userId].sort().join("_");
+        const res = await api.get(`/chat/${matchId}`);
+        if (res.data.success) {
+          setChatHistory(res.data.data);
+        }
+      } catch (err) {
+        console.error("Failed to load chat history", err);
+      }
+    };
+    fetchHistory();
+  }, [userId, user]);
 
   const fetchMatchUser = async () => {
     try {
@@ -53,9 +101,16 @@ const Chat = () => {
 
   const handleSendMessage = (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    // TODO: Emit socket event here!
-    console.log("Sending chat message:", message);
+    if (!message.trim() || !socket) return;
+    
+    const matchId = [user._id, userId].sort().join("_");
+    
+    socket.emit("sendMessage", {
+      matchId,
+      senderId: user._id,
+      text: message
+    });
+    
     setMessage("");
   };
 
@@ -234,13 +289,24 @@ const Chat = () => {
               </div>
             </div>
 
-            {/* Dummy Message just for UI visualization */}
-            <div className="self-start flex flex-col gap-1 max-w-[85%] mt-4">
-              <span className="text-[10px] text-white/40 ml-2 font-medium uppercase tracking-wider">{matchUser.firstName}</span>
-              <div className="bg-[#2a2a32] text-white/90 rounded-2xl rounded-tl-sm px-5 py-3 text-sm shadow-md border border-white/5">
-                Hey! Thanks for matching. Your React projects look awesome. I'm building a startup and looking for someone with your skills.
-              </div>
-            </div>
+            {chatHistory.map((msg, index) => {
+              const isMe = msg.senderId._id === user._id || msg.senderId === user._id;
+              
+              return (
+                <div key={index} className={`flex flex-col gap-1 max-w-[85%] mt-4 ${isMe ? "self-end items-end" : "self-start"}`}>
+                  <span className={`text-[10px] text-white/40 font-medium uppercase tracking-wider ${isMe ? "mr-2" : "ml-2"}`}>
+                    {isMe ? "You" : msg.senderId.firstName}
+                  </span>
+                  <div className={`rounded-2xl px-5 py-3 text-sm shadow-md border ${
+                    isMe 
+                    ? "bg-primary text-white rounded-tr-sm border-primary" 
+                    : "bg-[#2a2a32] text-white/90 rounded-tl-sm border-white/5"
+                  }`}>
+                    {msg.text}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Chat Input Footer */}
