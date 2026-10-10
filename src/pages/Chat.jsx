@@ -292,17 +292,27 @@ const Chat = () => {
             {chatHistory.map((msg, index) => {
               const isMe = msg.senderId._id === user._id || msg.senderId === user._id;
               
+              // Format the timestamp
+              const messageTime = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "";
+
               return (
-                <div key={index} className={`flex flex-col gap-1 max-w-[85%] mt-4 ${isMe ? "self-end items-end" : "self-start"}`}>
-                  <span className={`text-[10px] text-white/40 font-medium uppercase tracking-wider ${isMe ? "mr-2" : "ml-2"}`}>
-                    {isMe ? "You" : msg.senderId.firstName}
-                  </span>
-                  <div className={`rounded-2xl px-5 py-3 text-sm shadow-md border ${
-                    isMe 
-                    ? "bg-primary text-white rounded-tr-sm border-primary" 
-                    : "bg-[#2a2a32] text-white/90 rounded-tl-sm border-white/5"
-                  }`}>
-                    {msg.text}
+                <div key={index} className={`flex gap-3 max-w-[85%] mt-4 ${isMe ? "self-end flex-row-reverse" : "self-start"}`}>
+                  <div className={`flex flex-col gap-1 ${isMe ? "items-end" : "items-start"}`}>
+                    <div className="flex items-center gap-2 px-1">
+                      <span className="text-[10px] text-white/40 font-medium uppercase tracking-wider">
+                        {isMe ? "You" : msg.senderId.firstName}
+                      </span>
+                      {messageTime && (
+                        <span className="text-[9px] text-white/30 font-medium">{messageTime}</span>
+                      )}
+                    </div>
+                    <div className={`rounded-2xl px-5 py-3 text-sm shadow-md border ${
+                      isMe 
+                      ? "bg-primary text-white rounded-tr-sm border-primary" 
+                      : "bg-[#2a2a32] text-white/90 rounded-tl-sm border-white/5"
+                    }`}>
+                      {msg.text}
+                    </div>
                   </div>
                 </div>
               );
