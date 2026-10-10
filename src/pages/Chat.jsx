@@ -323,20 +323,20 @@ const Chat = () => {
               </Link>
               <img src={matchUser.photourl} className="w-14 h-14 rounded-full object-cover border border-white/10" />
               <div className="overflow-hidden">
-                <h3 className="font-bold text-white text-lg truncate">{matchUser.firstName} {matchUser.lastName}</h3>
+                <h3 className="font-bold text-white text-lg truncate leading-tight">{matchUser.firstName} {matchUser.lastName}</h3>
                 {connectionStatus === "accepted" ? (
-                  <p className="text-xs text-emerald-400 font-medium truncate flex items-center gap-1">
+                  <p className="text-xs text-emerald-400 font-medium truncate flex items-center gap-1 mt-1">
                     <CheckCircle size={10} /> Full Access Unlocked
                   </p>
                 ) : (
-                  <p className="text-xs text-primary font-medium truncate flex items-center gap-1">
+                  <p className="text-xs text-primary font-medium truncate flex items-center gap-1 mt-1">
                     <Lock size={10} /> Limited Chat Mode
                   </p>
                 )}
               </div>
             </div>
             {/* Chat Header Actions */}
-            {connectionStatus !== "accepted" && (
+            {connectionStatus !== "accepted" ? (
               <button
                 onClick={() => setShowRequestModal(true)}
                 disabled={connectionStatus === "pending"}
@@ -344,6 +344,19 @@ const Chat = () => {
               >
                 {connectionStatus === "pending" ? "Request Pending" : "Premium Request"}
               </button>
+            ) : (
+              <div className="hidden sm:flex items-center gap-3 px-4 py-2 bg-gradient-to-r from-cyan-500/10 to-emerald-500/10 border border-cyan-500/20 rounded-xl shadow-[0_0_15px_rgba(34,211,238,0.15)] shrink-0">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></div>
+                  <span className="text-[11px] font-black uppercase tracking-widest bg-gradient-to-r from-cyan-400 to-emerald-400 bg-clip-text text-transparent">
+                    AI Ready
+                  </span>
+                </div>
+                <div className="w-px h-4 bg-white/10"></div>
+                <span className="text-xs text-white/70 font-medium">
+                  Type <strong className="text-cyan-400 px-1">@ai</strong> to ask
+                </span>
+              </div>
             )}
           </div>
 

@@ -45,7 +45,7 @@ const NavBar = () => {
           <img
             src={logo}
             alt="skillsync-logo"
-            className="h-10 sm:h-12 w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+            className="w-36 sm:w-48 h-auto object-contain group-hover:scale-105 transition-transform duration-300"
           />
         </div>
       </div>
@@ -128,12 +128,6 @@ const NavBar = () => {
                       </span>
                     )}
                   </div>
-                </Link>
-              </li>
-              <li>
-                <Link to="/settings" className="hover:bg-primary/20 hover:text-primary transition-colors py-3">
-                  <Settings size={18} className="opacity-70" />
-                  Settings
                 </Link>
               </li>
               <div className="divider my-0 opacity-20"></div>
