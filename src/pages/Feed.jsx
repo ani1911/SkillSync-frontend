@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setFeed, removeFromFeed, setFeedLoading, appendFeed } from "../store/feedSlice";
 import axiosInstance from "../utils/axios";
-import { BASE_URL } from "../utils/constants";
 import { X, Heart } from "lucide-react";
 import UserCard, { FALLBACK_AVATAR } from "../components/UserCard";
 
@@ -24,9 +23,7 @@ const Feed = () => {
     try {
       dispatch(setFeedLoading(true));
       const endpoint = loggedInUser ? "/user/feed" : "/feed";
-      const res = await axiosInstance.get(BASE_URL + `${endpoint}?page=` + page + "&limit=10&t=" + Date.now(), {
-        withCredentials: true,
-      });
+      const res = await axiosInstance.get(`${endpoint}?page=${page}&limit=10&t=${Date.now()}`);
       if (page === 1) {
         dispatch(setFeed({ users: res.data.feed, page, hasMore: res.data.feed.length > 0 }));
       } else {
@@ -51,7 +48,7 @@ const Feed = () => {
 
     try {
       dispatch(removeFromFeed(userId));
-      const res = await axiosInstance.post(BASE_URL + "/match/" + action + "/" + userId, {}, { withCredentials: true });
+      const res = await axiosInstance.post(`/match/${action}/${userId}`);
       if (res.data.isMatch) {
         setMatchedUser(swipedUser);
       }
@@ -165,7 +162,7 @@ const Feed = () => {
               onClick={async () => {
                 try {
                   setSendingConnection(true);
-                  await axiosInstance.post(BASE_URL + "/connection/send/" + matchedUser._id, { message: connectionMessage }, { withCredentials: true });
+                  await axiosInstance.post(`/connection/send/${matchedUser._id}`, { message: connectionMessage });
                   setMatchedUser(null);
                   setConnectionMessage("");
                 } catch (err) {
