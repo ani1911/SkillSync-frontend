@@ -75,23 +75,15 @@ const NavBar = () => {
               </Link>
             </div>
 
-            {user.isPremium ? (
-              <span className="badge badge-warning text-xs font-black text-black bg-gradient-to-r from-amber-400 to-yellow-500 border-none shadow-md gap-1 px-3 py-2 cursor-default">
-                ⭐ PRO
-              </span>
-            ) : (
-              <button
-                onClick={() => setShowPremiumModal(true)}
-                className="btn btn-xs sm:btn-sm animated-gradient-btn border-0 text-white font-semibold flex items-center gap-1.5 shadow-md hover:scale-105 transition-transform"
-              >
-                <Sparkles size={14} />
-                <span className="hidden sm:inline">Upgrade to Pro</span>
-                <span className="sm:hidden">Pro</span>
-              </button>
-            )}
-
             <div className="hidden sm:flex flex-col items-end">
-              <p className="font-semibold text-sm">{user.firstName} {user.lastName}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="font-semibold text-sm">{user.firstName} {user.lastName}</p>
+                {user.isPremium && (
+                  <span className="badge badge-warning text-[10px] font-black text-black bg-gradient-to-r from-amber-400 to-yellow-500 border-none px-2 py-0.5 shadow-sm">
+                    PRO
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-base-content/60">{user.headline || 'Member'}</p>
             </div>
             <div className="dropdown dropdown-end">

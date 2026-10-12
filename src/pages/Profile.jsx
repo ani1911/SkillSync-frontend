@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
 import { addUser } from "../store/userSlice";
-import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2, Trash2, Plus } from "lucide-react";
+import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2, Trash2, Plus, Sparkles } from "lucide-react";
+import PremiumModal from "../components/PremiumModal";
 
 const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";
 
@@ -295,6 +296,7 @@ const Profile = () => {
   const user = useSelector((store) => store.user);
   const dispatch = useDispatch();
   const [previewMode, setPreviewMode] = useState('mobile');
+  const [showPremiumModal, setShowPremiumModal] = useState(false);
 
   const [formData, setFormData] = useState({
     firstName: "", lastName: "", username: "", age: "", gender: "",
@@ -416,6 +418,42 @@ const Profile = () => {
             )}
 
             <form onSubmit={handleSubmit} className="p-6 space-y-7 h-full">
+              {user?.isPremium ? (
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 via-yellow-500/10 to-indigo-500/10 border border-amber-500/30 flex items-center justify-between shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-amber-500/20 text-amber-400 rounded-xl">
+                      <Sparkles size={20} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-bold text-white text-sm">SkillSync Pro Member</h4>
+                        <span className="badge badge-warning text-[10px] font-black text-black">ACTIVE</span>
+                      </div>
+                      <p className="text-xs text-white/60 mt-0.5">Verified Pro Badge & Priority Matchmaking active</p>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-950/60 to-purple-950/60 border border-indigo-500/30 flex items-center justify-between shadow-lg">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2.5 bg-indigo-500/20 text-indigo-400 rounded-xl">
+                      <Sparkles size={20} />
+                    </div>
+                    <div>
+                      <h4 className="font-bold text-white text-sm">Upgrade to SkillSync Pro</h4>
+                      <p className="text-xs text-white/60 mt-0.5">Get verified badge & priority discovery for ₹99</p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPremiumModal(true)}
+                    className="btn btn-sm animated-gradient-btn border-0 text-white font-semibold shadow-md hover:scale-105 transition-transform"
+                  >
+                    Upgrade Pass
+                  </button>
+                </div>
+              )}
+
               <div>
                 <SectionTitle>Identity</SectionTitle>
                 <div className="grid grid-cols-2 gap-3 mb-3">
@@ -582,6 +620,10 @@ const Profile = () => {
           </div>
         </div>
       </div>
+      <PremiumModal
+        isOpen={showPremiumModal}
+        onClose={() => setShowPremiumModal(false)}
+      />
     </div>
   );
 };
