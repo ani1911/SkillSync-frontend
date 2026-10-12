@@ -57,6 +57,33 @@ const Feed = () => {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (
+        showSignupModal ||
+        matchedUser ||
+        e.target.tagName === "INPUT" ||
+        e.target.tagName === "TEXTAREA"
+      ) {
+        return;
+      }
+
+      if (users.length === 0) return;
+      const topUser = users[0];
+
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        handleSwipe("dislike", topUser._id);
+      } else if (e.key === "ArrowRight") {
+        e.preventDefault();
+        handleSwipe("like", topUser._id);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [users, showSignupModal, matchedUser, loggedInUser]);
+
   if (loading && users.length === 0 && !matchedUser) {
     return (
       <div className="flex justify-center items-center h-[70vh]">
@@ -78,7 +105,22 @@ const Feed = () => {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col justify-center items-center py-6 px-4 overflow-hidden relative">
+    <div className="flex-1 w-full flex flex-col justify-center items-center py-4 px-4 overflow-hidden relative">
+      {/* Interactive Swipe & Keyboard Guide Pill (Shown only for guests / new users) */}
+      {!loggedInUser && (
+        <div className="flex items-center gap-3 px-4 py-2 mb-3 bg-[#1e1e24]/80 backdrop-blur-md rounded-full border border-white/10 text-xs text-white/70 shadow-xl select-none animate-in fade-in slide-in-from-top-2">
+          <span className="flex items-center gap-1.5 text-rose-400 font-semibold">
+            <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10 text-[11px] text-white font-mono shadow-sm">←</kbd>
+            Swipe Left to Pass
+          </span>
+          <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+          <span className="flex items-center gap-1.5 text-emerald-400 font-semibold">
+            Swipe Right to Connect
+            <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/10 text-[11px] text-white font-mono shadow-sm">→</kbd>
+          </span>
+        </div>
+      )}
+
       <div className="relative w-full max-w-[800px] flex justify-center h-[75vh] max-h-[800px] min-h-[500px]">
         {users.slice(0, 3).reverse().map((user, reversedIndex) => {
           const actualIndex = Math.min(users.length, 3) - 1 - reversedIndex;

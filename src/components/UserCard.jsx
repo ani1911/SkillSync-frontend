@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2 } from "lucide-react";
 
@@ -27,6 +27,19 @@ const UserCard = ({ user, onSwipe, index }) => {
   const opacity = useTransform(x, [-200, 0, 200], [0.8, 1, 0.8]);
   const likeOpacity = useTransform(x, [20, 100], [0, 1]);
   const nopeOpacity = useTransform(x, [-20, -100], [0, 1]);
+
+  useEffect(() => {
+    if (index === 0) {
+      const timer = setTimeout(() => {
+        controls.start({
+          x: [0, 24, -24, 0],
+          rotate: [0, 2, -2, 0],
+          transition: { duration: 0.7, ease: "easeInOut" }
+        });
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [index, user._id, controls]);
 
   const handleDragEnd = async (e, info) => {
     const offset = info.offset.x;
