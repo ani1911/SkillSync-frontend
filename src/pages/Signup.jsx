@@ -48,16 +48,16 @@ const Signup = () => {
         </div>
 
         {error && (
-          <div role="alert" className="alert alert-error mb-6 rounded-xl border-error/20 bg-error/10 text-error-content animate-in fade-in slide-in-from-top-2">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span className="text-sm font-medium">{error}</span>
+          <div role="alert" className="flex items-center gap-3 p-3.5 mb-6 rounded-xl border border-rose-500/30 bg-rose-500/15 text-rose-200 animate-in fade-in slide-in-from-top-2 shadow-lg shadow-rose-950/20">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-rose-400 shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span className="text-sm font-semibold text-rose-200">{error}</span>
           </div>
         )}
         
         {success && (
-          <div role="alert" className="alert alert-success mb-6 rounded-xl border-success/20 bg-success/10 text-success-content animate-in fade-in zoom-in">
-            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-            <span className="text-sm font-medium">Welcome aboard! Redirecting to profile setup...</span>
+          <div role="alert" className="flex items-center gap-3 p-3.5 mb-6 rounded-xl border border-emerald-500/30 bg-emerald-500/15 text-emerald-200 animate-in fade-in zoom-in shadow-lg shadow-emerald-950/20">
+            <svg xmlns="http://www.w3.org/2000/svg" className="stroke-emerald-400 shrink-0 h-5 w-5" fill="none" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span className="text-sm font-semibold text-emerald-200">Welcome aboard! Redirecting to profile setup...</span>
           </div>
         )}
 
