@@ -127,8 +127,14 @@ const UserCard = ({ user, onSwipe, index }) => {
               }
             `}</style>
           <div className="mb-4">
-            <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md">
-              {user.firstName} {user.lastName} <span className="text-2xl text-white/50 font-normal"> {user.age || ""}</span>
+            <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md flex items-center gap-2">
+              <span>{user.firstName} {user.lastName}</span>
+              <span className="text-2xl text-white/50 font-normal">{user.age || ""}</span>
+              {user.isPremium && (
+                <span className="badge badge-warning text-[10px] font-black tracking-wider uppercase px-2 py-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-black border-none shadow-sm">
+                  PRO
+                </span>
+              )}
             </h2>
             {user.username && <p className="text-primary font-medium text-sm">@{user.username}</p>}
             <p className="text-white/80 font-medium mt-1 leading-snug">

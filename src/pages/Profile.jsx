@@ -197,8 +197,14 @@ export const ProfileCard = ({ data, previewMode = 'desktop' }) => {
         {/* Right Side: Scrollable Content Area */}
         <div className={`flex-1 p-6 relative overflow-y-auto ${!isMobile ? 'xl:p-8 z-10' : ''}`}>
           <div className="mb-4">
-            <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md">
-              {data.firstName || "Your Name"} {data.lastName} <span className="text-2xl text-white/50 font-normal"> {data.age || ""}</span>
+            <h2 className="text-3xl font-bold text-white font-sans tracking-tight drop-shadow-md flex items-center gap-2">
+              <span>{data.firstName || "Your Name"} {data.lastName}</span>
+              <span className="text-2xl text-white/50 font-normal">{data.age || ""}</span>
+              {(data.isPremium || user?.isPremium) && (
+                <span className="badge badge-warning text-[10px] font-black tracking-wider uppercase px-2 py-0.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-black border-none shadow-sm">
+                  PRO
+                </span>
+              )}
             </h2>
             {data.username && <p className="text-primary font-medium text-sm">@{data.username}</p>}
             <p className="text-white/80 font-medium mt-1 leading-snug">
