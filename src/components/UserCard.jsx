@@ -2,7 +2,8 @@ import React, { useEffect } from "react";
 import { motion, useAnimation, useMotionValue, useTransform } from "framer-motion";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2 } from "lucide-react";
 
-export const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";
+import { FALLBACK_AVATAR } from "../utils/constants";
+export { FALLBACK_AVATAR };
 
 const EXPERIENCE_BADGE = {
   beginner: { label: "Beginner", cls: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" },

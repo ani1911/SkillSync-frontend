@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Zap } from "lucide-react";
 import api from "../utils/axios";
 import { addUser } from "../store/userSlice";
 
@@ -22,6 +23,21 @@ const Login = () => {
     return <Navigate to="/" replace />;
   }
 
+  const handleDemoLogin = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      await api.post("/login", { emailId: "arjun.mehta@seed.dev", password: "demo123" });
+      const res = await api.get("/profile/view");
+      dispatch(addUser(res.data));
+      navigate("/");
+    } catch (err) {
+      setError(getErrorMessage(err.response?.data));
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
@@ -42,9 +58,28 @@ const Login = () => {
     <div className="flex-grow flex items-center justify-center p-4">
       <div className="glass-panel w-full max-w-md rounded-3xl p-8 transform transition-all hover:scale-[1.01] duration-500 relative z-10">
 
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <h2 className="text-4xl font-black mb-2 tracking-tight">Welcome Back</h2>
           <p className="text-base-content/60 font-medium">Log in to sync your skills and connect.</p>
+        </div>
+
+        {/* 1-Click Demo Login */}
+        <div className="mb-6">
+          <button
+            type="button"
+            onClick={handleDemoLogin}
+            disabled={loading}
+            className="w-full py-3.5 px-4 rounded-2xl bg-gradient-to-r from-amber-500/20 via-primary/20 to-secondary/20 hover:from-amber-500/30 hover:via-primary/30 hover:to-secondary/30 border border-amber-500/30 hover:border-amber-400 text-white font-bold flex items-center justify-center gap-2.5 shadow-lg shadow-primary/10 transition-all transform hover:scale-[1.01] active:scale-[0.99] group"
+          >
+            <Zap size={18} className="text-amber-400 group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-bold tracking-wide">1-Click Demo Login</span>
+            <span className="badge badge-warning text-[10px] font-black uppercase tracking-wider px-2 py-0.5">Instant</span>
+          </button>
+          <div className="flex items-center gap-3 my-4">
+            <div className="h-px bg-white/10 flex-1" />
+            <span className="text-[11px] uppercase tracking-wider text-white/30 font-semibold">Or with password</span>
+            <div className="h-px bg-white/10 flex-1" />
+          </div>
         </div>
 
         {error && (

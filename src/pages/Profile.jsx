@@ -5,7 +5,7 @@ import { addUser } from "../store/userSlice";
 import { X, Heart, Calendar, GitBranch, Link, GraduationCap, Users, Briefcase, Code2, Trash2, Plus, Sparkles } from "lucide-react";
 import PremiumModal from "../components/PremiumModal";
 
-const FALLBACK_AVATAR = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=400&h=400&fit=crop&crop=face";
+import { FALLBACK_AVATAR } from "../utils/constants";
 
 const EXPERIENCE_BADGE = {
   beginner: { label: "Beginner", cls: "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" },
