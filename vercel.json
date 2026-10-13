@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://skillsync-backend.onrender.com/:path*"
+      "destination": "https://skillsync-4xbt.onrender.com/:path*"
     },
     {
       "source": "/(.*)",
