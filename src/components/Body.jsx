@@ -20,7 +20,7 @@ const Body = () => {
           dispatch(removeUser());
           const publicPaths = ["/", "/signup", "/login"];
           if (!publicPaths.includes(window.location.pathname)) {
-             navigate("/login");
+            navigate("/login");
           }
         }
         console.error(err);
@@ -36,20 +36,18 @@ const Body = () => {
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary/20 rounded-full mix-blend-screen filter blur-[100px] animate-blob z-0"></div>
       <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-secondary/20 rounded-full mix-blend-screen filter blur-[120px] animate-blob animation-delay-2000 z-0"></div>
       <div className="absolute bottom-[-20%] left-[20%] w-[600px] h-[600px] bg-accent/20 rounded-full mix-blend-screen filter blur-[150px] animate-blob animation-delay-4000 z-0"></div>
-      
+
       <div className="relative z-10 flex flex-col min-h-screen">
-        {authLoading ? (
-          <div className="flex-grow flex items-center justify-center">
-            <span className="loading loading-spinner text-primary loading-lg"></span>
-          </div>
-        ) : (
-          <>
-            <NavBar />
-            <main className="flex-grow flex flex-col">
-              <Outlet />
-            </main>
-          </>
-        )}
+        <NavBar />
+        <main className="flex-grow flex flex-col">
+          {authLoading ? (
+            <div className="flex-grow flex items-center justify-center">
+              <span className="loading loading-spinner text-primary loading-lg"></span>
+            </div>
+          ) : (
+            <Outlet />
+          )}
+        </main>
       </div>
     </div>
   );
