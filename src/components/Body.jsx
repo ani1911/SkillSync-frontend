@@ -10,6 +10,14 @@ const Body = () => {
   const navigate = useNavigate();
   const [authLoading, setAuthLoading] = useState(true);
 
+  // Keep Render free-tier server awake by pinging /health every 10 minutes
+  useEffect(() => {
+    const ping = () => api.get("/health").catch(() => {});
+    ping(); // ping immediately on load to wake server ASAP
+    const interval = setInterval(ping, 10 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     const fetchLoggedInUser = async () => {
       try {
